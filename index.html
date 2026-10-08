@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8">
@@ -11,7 +11,7 @@
   </style>
   <title>Ecosistema de Pago ANSES</title>
   <style>
-    /* Layout: hub map â€” ANSES a la izquierda, Banco Bica al centro, BCRA y beneficiario a la derecha. Flechas y nodos clickeables abren una burbuja con su explicaciÃ³n. */
+    /* Layout: hub map — ANSES a la izquierda, Banco Bica al centro, BCRA y beneficiario a la derecha. Flechas y nodos clickeables abren una burbuja con su explicación. */
     :root{
       --bg:#eef1f5; --surface:#ffffff; --surface-2:#f6f8fb;
       --fg:#17202e; --muted:#5c6878; --line:#d3dae3; --line-soft:#e4e9f0;
@@ -181,9 +181,9 @@
 <body>
   <div class="wrap">
     <header>
-      <p class="eyebrow">Banco Bica Â· Agente pagador ANSES</p>
+      <p class="eyebrow">Banco Bica · Agente pagador ANSES</p>
       <h1>Ecosistema de Pago ANSES</h1>
-      <p class="sub">CÃ³mo circula una liquidaciÃ³n de jubilaciones y pensiones entre ANSES, el BCRA, el banco y el beneficiario. Cada flecha indica quiÃ©n actÃºa, en quÃ© direcciÃ³n y quÃ© tipo de flujo es.</p>
+      <p class="sub">Cómo circula una liquidación de jubilaciones y pensiones entre ANSES, el BCRA, el banco y el beneficiario. Cada flecha indica quién actúa, en qué dirección y qué tipo de flujo es.</p>
     </header>
   
     <div class="controls">
@@ -196,11 +196,11 @@
         <div class="row" id="actorsKey"></div>
       </div>
     </div>
-    <p class="hint">TocÃ¡ cualquier <strong>flecha</strong> o <strong>recuadro</strong> para ver su explicaciÃ³n, el momento y la fuente. Los nÃºmeros <strong>1â€“9</strong> siguen el orden del ciclo normal de pago; los que empiezan con <strong>E</strong> son pasos <strong>eventuales</strong> (solo en ciertos casos).</p>
+    <p class="hint">Tocá cualquier <strong>flecha</strong> o <strong>recuadro</strong> para ver su explicación, el momento y la fuente. Los números <strong>1–9</strong> siguen el orden del ciclo normal de pago; los que empiezan con <strong>E</strong> son pasos <strong>eventuales</strong> (solo en ciertos casos).</p>
   
     <div class="stage">
       <div class="diagram-wrap" id="dwrap">
-        <svg class="scene" id="scene" viewBox="0 0 1240 660" role="img" aria-label="Diagrama del ecosistema de pago de ANSES. ANSES liquida los beneficios y da las Ã³rdenes; el BCRA provee los fondos y recibe la rendiciÃ³n; el banco acredita a los beneficiarios, les informa las CBU judiciales y rinde al BCRA.">
+        <svg class="scene" id="scene" viewBox="0 0 1240 660" role="img" aria-label="Diagrama del ecosistema de pago de ANSES. ANSES liquida los beneficios y da las órdenes; el BCRA provee los fondos y recibe la rendición; el banco acredita a los beneficiarios, les informa las CBU judiciales y rinde al BCRA.">
           <defs>
             <marker id="arrow-archivo" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"/></marker>
             <marker id="arrow-dinero" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"/></marker>
@@ -213,12 +213,12 @@
           <g id="labels"></g>
         </svg>
       </div>
-      <div class="bubble" id="bubble" hidden role="dialog" aria-label="ExplicaciÃ³n"></div>
+      <div class="bubble" id="bubble" hidden role="dialog" aria-label="Explicación"></div>
     </div>
   
     <section class="pay">
-      <h3>Â¿QuÃ© le hace pagar ANSES al banco?</h3>
-      <p class="lead">Todo entra como liquidaciÃ³n de ANSES, un producto por vez, con el mismo DiseÃ±o Ãšnico de Registro. El banco acredita en cuenta o paga por ventanilla. (Anexo I, punto 1.2)</p>
+      <h3>¿Qué le hace pagar ANSES al banco?</h3>
+      <p class="lead">Todo entra como liquidación de ANSES, un producto por vez, con el mismo Diseño Único de Registro. El banco acredita en cuenta o paga por ventanilla. (Anexo I, punto 1.2)</p>
       <div class="cols">
         <div class="col">
           <h4>Prestaciones propias de ANSES</h4>
@@ -228,37 +228,37 @@
             <li>Primeros pagos de jubilaciones y pensiones</li>
             <li>Retroactivos de sentencias judiciales</li>
             <li>Asignaciones Familiares</li>
-            <li>Pago Ãšnico de Asignaciones Familiares</li>
+            <li>Pago Único de Asignaciones Familiares</li>
             <li>Seguro por Desempleo (Planes 1, 2 y 3)</li>
-            <li>AsignaciÃ³n Universal por Hijo y por embarazo</li>
-            <li>Subsidio de ContenciÃ³n Familiar</li>
+            <li>Asignación Universal por Hijo y por embarazo</li>
+            <li>Subsidio de Contención Familiar</li>
           </ul>
         </div>
         <div class="col t">
           <h4>Por cuenta y orden de terceros</h4>
           <ul>
             <li>Programas del MTEySS (Ministerio de Trabajo, Empleo y Seguridad Social)</li>
-            <li>Primeros AÃ±os (PDIPA)</li>
+            <li>Primeros Años (PDIPA)</li>
             <li>Progresar</li>
             <li>Hogar con Garrafas</li>
-            <li>RENNyA (reparaciÃ³n econÃ³mica para niÃ±as, niÃ±os y adolescentes)</li>
+            <li>RENNyA (reparación económica para niñas, niños y adolescentes)</li>
             <li>Ingreso Social con Trabajo (PRIST)</li>
             <li>Alimentar</li>
           </ul>
         </div>
       </div>
-      <p class="note">ANSES puede sumar o dar de baja productos. Los retroactivos de sentencia y las cuentas judiciales (embargos, tutelas, curatelas) se pagan con reglas especiales de ruteo y autorizaciÃ³n; el resto se acredita segÃºn el calendario de pagos.</p>
+      <p class="note">ANSES puede sumar o dar de baja productos. Los retroactivos de sentencia y las cuentas judiciales (embargos, tutelas, curatelas) se pagan con reglas especiales de ruteo y autorización; el resto se acredita según el calendario de pagos.</p>
     </section>
   
     <section class="pay retorno">
-      <h3>Â¿CÃ³mo vuelve la plata que no se pagÃ³?</h3>
-      <p class="lead">El banco nunca hace una transferencia de vuelta. Todo se salda como un <strong>dÃ©bito en la cuenta corriente que el banco tiene en el BCRA</strong> (ver flujo 9). Hay tres situaciones.</p>
+      <h3>¿Cómo vuelve la plata que no se pagó?</h3>
+      <p class="lead">El banco nunca hace una transferencia de vuelta. Todo se salda como un <strong>débito en la cuenta corriente que el banco tiene en el BCRA</strong> (ver flujo 9). Hay tres situaciones.</p>
       <div class="rcards">
         <div class="rcard">
           <span class="rnum">1</span>
           <div>
-            <strong>Impagos del perÃ­odo</strong>
-            <p>Lo que el banco no pagÃ³, el BCRA se lo debita de su cuenta al cerrar la rendiciÃ³n.</p>
+            <strong>Impagos del período</strong>
+            <p>Lo que el banco no pagó, el BCRA se lo debita de su cuenta al cerrar la rendición.</p>
             <span class="rsrc">BCRA A 6386, secc. 3.2.2 y 2.8</span>
           </div>
         </div>
@@ -266,16 +266,16 @@
           <span class="rnum">2</span>
           <div>
             <strong>Reversas</strong>
-            <p>AUH / primeros pagos no formalizados: el banco revierte el crÃ©dito hecho al beneficiario y ese importe se rinde como impago â†’ se debita igual.</p>
-            <span class="rsrc">Anexo I (acreditaciÃ³n / reversa)</span>
+            <p>AUH / primeros pagos no formalizados: el banco revierte el crédito hecho al beneficiario y ese importe se rinde como impago → se debita igual.</p>
+            <span class="rsrc">Anexo I (acreditación / reversa)</span>
           </div>
         </div>
         <div class="rcard">
           <span class="rnum">3</span>
           <div>
-            <strong>Fuera de tÃ©rmino / fallecimiento</strong>
-            <p>ANSES debita de la cuenta del banco el lÃ­quido + las comisiones indebidamente percibidas + la multa.</p>
-            <span class="rsrc">Anexo I, pÃ¡g. 13â€“15; A 6386 secc. 2.8</span>
+            <strong>Fuera de término / fallecimiento</strong>
+            <p>ANSES debita de la cuenta del banco el líquido + las comisiones indebidamente percibidas + la multa.</p>
+            <span class="rsrc">Anexo I, pág. 13–15; A 6386 secc. 2.8</span>
           </div>
         </div>
       </div>
@@ -286,7 +286,7 @@
   
     <section class="comments">
       <h2 class="section">Comentarios del equipo</h2>
-      <p class="chint">DejÃ¡ una aclaraciÃ³n, una correcciÃ³n o una duda sobre el circuito. Los comentarios quedan en las Discusiones del repositorio; para escribir hay que iniciar sesiÃ³n con la cuenta de GitHub.</p>
+      <p class="chint">Dejá una aclaración, una corrección o una duda sobre el circuito. Los comentarios quedan en las Discusiones del repositorio; para escribir hay que iniciar sesión con la cuenta de GitHub.</p>
       <div id="giscus-slot"><script src="https://giscus.app/client.js"
           data-repo="cdruizdiaz/ecosistema-pago-anses"
           data-repo-id="R_kgDOVBVbOg"
@@ -304,7 +304,7 @@
     </section>
   
     <footer>
-      Elaborado a partir del Anexo I â€“ Procedimiento de Pago (ANSES), la ComunicaciÃ³n BCRA â€œAâ€ 6386 y la Res. ANSES 132/2023. ANSES es el Ãºnico interlocutor del banco por los ingresos; â€œLegalesâ€ es una validaciÃ³n interna del banco. Los diseÃ±os de registro byte a byte estÃ¡n en el Anexo II (DiseÃ±os de Registros), aÃºn pendiente.
+      Elaborado a partir del Anexo I – Procedimiento de Pago (ANSES), la Comunicación BCRA “A” 6386 y la Res. ANSES 132/2023. ANSES es el único interlocutor del banco por los ingresos; “Legales” es una validación interna del banco. Los diseños de registro byte a byte están en el Anexo II (Diseños de Registros), aún pendiente.
     </footer>
   </div>
   
@@ -313,67 +313,67 @@
     var SVGNS="http://www.w3.org/2000/svg";
     function el(tag,attrs){var e=document.createElementNS(SVGNS,tag);if(attrs)for(var k in attrs)e.setAttribute(k,attrs[k]);return e;}
   
-    var TYPE_LABEL={archivo:"Archivo",dinero:"Dinero",instr:"InstrucciÃ³n",accion:"AcciÃ³n",control:"Control"};
+    var TYPE_LABEL={archivo:"Archivo",dinero:"Dinero",instr:"Instrucción",accion:"Acción",control:"Control"};
     function dirLabel(d){ return d==="self" ? "interno" : d; }
-    var TYPES=[["archivo","Archivo"],["dinero","Dinero"],["instr","InstrucciÃ³n"],["accion","AcciÃ³n beneficiario"],["control","Control / validaciÃ³n"]];
+    var TYPES=[["archivo","Archivo"],["dinero","Dinero"],["instr","Instrucción"],["accion","Acción beneficiario"],["control","Control / validación"]];
   
     var NODES={
       anses:{x:60,y:215,w:220,h:150,title:"ANSES",sub:"Liquida y pone al pago",accent:"anses",
-        desc:"Liquida y pone al pago los beneficios por producto, y es el Ãºnico interlocutor del banco por los ingresos: envÃ­a las liquidaciones, instruye retenciones por mail y recibe del banco la CBU (Clave Bancaria Ãšnica) de las cuentas judiciales. Debajo del diagrama estÃ¡ el detalle de quÃ© le hace pagar al banco."},
+        desc:"Liquida y pone al pago los beneficios por producto, y es el único interlocutor del banco por los ingresos: envía las liquidaciones, instruye retenciones por mail y recibe del banco la CBU (Clave Bancaria Única) de las cuentas judiciales. Debajo del diagrama está el detalle de qué le hace pagar al banco."},
       banco:{x:540,y:320,w:260,h:130,title:"Banco Bica",sub:"Agente pagador (LA ENTIDAD)",accent:"banco",hub:true,
-        desc:"Agente pagador (LA ENTIDAD). Da de alta clientes y abre cajas previsionales, acredita o paga por ventanilla, aplica retenciones, emite la OPE (Orden de Pago ElectrÃ³nica), informa a ANSES las CBU (Clave Bancaria Ãšnica) judiciales (validadas por Legales) y rinde ante el BCRA."},
-      bcra:{x:1010,y:155,w:185,h:100,title:"BCRA",sub:"Fondos Â· rendiciÃ³n",accent:"bcra",
-        desc:"Donde estÃ¡ el dinero y ante quiÃ©n se rinde. Abre dos cuentas corrientes especiales (meses pares / impares) que ANSES fondea, y recibe y procesa la rendiciÃ³n: debita impagos y acredita comisiones en la cuenta del banco."},
+        desc:"Agente pagador (LA ENTIDAD). Da de alta clientes y abre cajas previsionales, acredita o paga por ventanilla, aplica retenciones, emite la OPE (Orden de Pago Electrónica), informa a ANSES las CBU (Clave Bancaria Única) judiciales (validadas por Legales) y rinde ante el BCRA."},
+      bcra:{x:1010,y:155,w:185,h:100,title:"BCRA",sub:"Fondos · rendición",accent:"bcra",
+        desc:"Donde está el dinero y ante quién se rinde. Abre dos cuentas corrientes especiales (meses pares / impares) que ANSES fondea, y recibe y procesa la rendición: debita impagos y acredita comisiones en la cuenta del banco."},
       beneficiario:{x:1010,y:470,w:185,h:100,title:"Beneficiario",sub:"Titular / Apoderado",accent:"benef",
-        desc:"Titular o apoderado. Recibe la acreditaciÃ³n en su cuenta sueldo de la seguridad social / caja previsional, o cobra por ventanilla con OPE, y dispone de sus fondos: dÃ©bito, extracciones, compras, transferencias y home banking."}
+        desc:"Titular o apoderado. Recibe la acreditación en su cuenta sueldo de la seguridad social / caja previsional, o cobra por ventanilla con OPE, y dispone de sus fondos: débito, extracciones, compras, transferencias y home banking."}
     };
   
     var FLOWS=[
-      {id:"1",type:"archivo",dir:"â†’",pts:[[280,255],[540,355]],lpos:[410,300],short:"Liquidaciones + novedades",
-        route:"ANSES â†’ Banco",desc:"LiquidaciÃ³n de pago por producto + novedades (cambios de agente pagador, suspensiones, bajas) + complementarias. Incluye el producto Â«Retroactivos de Sentencias JudicialesÂ», con ruteo especial.",
-        when:"Disponible 5 dÃ­as hÃ¡biles antes de la fecha de pago. La fecha de inicio de pago va en cada registro; el perÃ­odo de vigencia, en la cabecera. Es el tiempo de antelaciÃ³n con que el banco tiene la info antes de acreditar.",
-        fmt:"Archivo de texto plano (ASCII) de longitud fija, por SITACI (Sistema Integrado de Transferencia, Almacenamiento y Control de la InformaciÃ³n, el canal de ANSES) â€” DiseÃ±o de Registro Ãšnico de LiquidaciÃ³n (Anexo II).",src:"Anexo I, pÃ¡g. 1, 9 y 13"},
-      {id:"2",type:"dinero",dir:"â†’",pts:[[170,215],[170,95],[1102,95],[1102,155]],npos:[170,180],lpos:[636,82],short:"deposita fondos Â· ctas pares/impares",
-        route:"ANSES â†’ BCRA",desc:"ANSES deposita los fondos para que el banco pueda pagar.",
-        when:"Hasta 24 h hÃ¡biles antes del inicio del perÃ­odo de pago.",
-        fmt:"AcreditaciÃ³n en las dos cuentas corrientes especiales del banco en el BCRA (Â«meses paresÂ» / Â«meses imparesÂ»).",src:"BCRA A 6386, secc. 3"},
-      {id:"3",type:"dinero",dir:"â†’",pts:[[1010,215],[800,355]],lpos:[905,262],short:"fondos a disposiciÃ³n",
-        route:"BCRA â†’ Banco",desc:"El BCRA pone esos fondos a disposiciÃ³n del banco para que, como agente pagador, los acredite a los beneficiarios.",
-        when:"Desde el inicio del perÃ­odo de pago.",fmt:"Disponibilidad en las cuentas especiales del banco en el BCRA."},
+      {id:"1",type:"archivo",dir:"→",pts:[[280,255],[540,355]],lpos:[410,300],short:"Liquidaciones + novedades",
+        route:"ANSES → Banco",desc:"Liquidación de pago por producto + novedades (cambios de agente pagador, suspensiones, bajas) + complementarias. Incluye el producto «Retroactivos de Sentencias Judiciales», con ruteo especial.",
+        when:"Disponible 5 días hábiles antes de la fecha de pago. La fecha de inicio de pago va en cada registro; el período de vigencia, en la cabecera. Es el tiempo de antelación con que el banco tiene la info antes de acreditar.",
+        fmt:"Archivo de texto plano (ASCII) de longitud fija, por SITACI (Sistema Integrado de Transferencia, Almacenamiento y Control de la Información, el canal de ANSES) — Diseño de Registro Único de Liquidación (Anexo II).",src:"Anexo I, pág. 1, 9 y 13"},
+      {id:"2",type:"dinero",dir:"→",pts:[[170,215],[170,95],[1102,95],[1102,155]],npos:[170,180],lpos:[636,82],short:"deposita fondos · ctas pares/impares",
+        route:"ANSES → BCRA",desc:"ANSES deposita los fondos para que el banco pueda pagar.",
+        when:"Hasta 24 h hábiles antes del inicio del período de pago.",
+        fmt:"Acreditación en las dos cuentas corrientes especiales del banco en el BCRA («meses pares» / «meses impares»).",src:"BCRA A 6386, secc. 3"},
+      {id:"3",type:"dinero",dir:"→",pts:[[1010,215],[800,355]],lpos:[905,262],short:"fondos a disposición",
+        route:"BCRA → Banco",desc:"El BCRA pone esos fondos a disposición del banco para que, como agente pagador, los acredite a los beneficiarios.",
+        when:"Desde el inicio del período de pago.",fmt:"Disponibilidad en las cuentas especiales del banco en el BCRA."},
       {id:"4",type:"control",dir:"self",pts:[[556,320],[604,320]],lpos:[580,274],short:"Apertura",
-        route:"Banco Â· Apertura de cuentas",desc:"Da de alta al cliente y abre la caja de ahorro previsional asociada, segÃºn las novedades que vienen en la liquidaciÃ³n de ANSES.",
-        when:"Al procesar la liquidaciÃ³n, cuando hay altas o reactivaciones de beneficios."},
+        route:"Banco · Apertura de cuentas",desc:"Da de alta al cliente y abre la caja de ahorro previsional asociada, según las novedades que vienen en la liquidación de ANSES.",
+        when:"Al procesar la liquidación, cuando hay altas o reactivaciones de beneficios."},
       {id:"5",type:"control",dir:"self",pts:[[626,320],[662,320]],lpos:[644,274],short:"OPE",
-        route:"Banco Â· EmisiÃ³n de OPE y tarjetas",desc:"Emite la OPE (Orden de Pago ElectrÃ³nica) para los productos que se cobran por ventanilla, y las tarjetas de dÃ©bito del titular y del apoderado.",
+        route:"Banco · Emisión de OPE y tarjetas",desc:"Emite la OPE (Orden de Pago Electrónica) para los productos que se cobran por ventanilla, y las tarjetas de débito del titular y del apoderado.",
         when:"Antes de poner el beneficio al cobro."},
-      {id:"6",type:"dinero",dir:"â†’",pts:[[800,440],[1010,510]],lpos:[905,488],short:"acreditaciÃ³n / OPE",
-        route:"Banco â†’ Beneficiario",desc:"Acredita en la cuenta sueldo de la seguridad social / caja previsional, o paga por ventanilla con OPE (Orden de Pago ElectrÃ³nica); entrega el extracto o detalle de la liquidaciÃ³n.",
-        when:"En la fecha de pago que indica el calendario, por beneficio.",fmt:"AcreditaciÃ³n en cuenta, o pago por ventanilla con OPE."},
+      {id:"6",type:"dinero",dir:"→",pts:[[800,440],[1010,510]],lpos:[905,488],short:"acreditación / OPE",
+        route:"Banco → Beneficiario",desc:"Acredita en la cuenta sueldo de la seguridad social / caja previsional, o paga por ventanilla con OPE (Orden de Pago Electrónica); entrega el extracto o detalle de la liquidación.",
+        when:"En la fecha de pago que indica el calendario, por beneficio.",fmt:"Acreditación en cuenta, o pago por ventanilla con OPE."},
       {id:"7",type:"accion",dir:"self",bulge:24,pts:[[1055,570],[1150,570]],lpos:[1102,602],short:"usa sus fondos",
-        route:"Beneficiario",desc:"El beneficiario dispone de su dinero: extracciones, pago con dÃ©bito, compras, transferencias y operaciones por home banking."},
-      {id:"8",type:"archivo",dir:"â†’",pts:[[800,380],[1070,255]],lpos:[930,300],short:"RendiciÃ³n + DDJJ",
-        route:"Banco â†’ BCRA",desc:"RendiciÃ³n de cuentas de todo el perÃ­odo. Incluye las rendiciones fuera de tÃ©rmino (FT): impagos FT (rectificar como impago algo rendido como pagado) y pagos FT (rectificar como pagado un impago).",
-        when:"Ordinaria: al cierre del perÃ­odo de vigencia de la liquidaciÃ³n (tardÃ­a â†’ multa de 2 jubilaciones mÃ­nimas por dÃ­a hÃ¡bil). Impagos FT: una sola presentaciÃ³n por mes, entre los dÃ­as 10 y 20 (sin multa dentro de 90 dÃ­as; 180 si el beneficiario reside en el exterior). Pagos FT: plazo de 90 dÃ­as corridos, con gasto del 2% de una jubilaciÃ³n mÃ­nima por beneficio.",
-        fmt:"Dos archivos de texto plano (ASCII) Â«TBBBMMAA.mENTID.txtÂ» (pagadas Â«PÂ» / impagas Â«IÂ») + DDJJ (declaraciÃ³n jurada) en original y duplicado; se presenta en la Gerencia de Cuentas Corrientes del BCRA (10 a 15 h). Los casos fuera de tÃ©rmino van por SITACI (el canal de ANSES) con nota digitalizada firmada.",src:"BCRA A 6386, secc. 2; Anexo I, pÃ¡g. 13â€“15"},
-      {id:"9",type:"dinero",dir:"â‡„",pts:[[1150,255],[800,420]],lpos:[985,342],short:"devoluciÃ³n Â· dÃ©bito Â· comisiones",
-        route:"BCRA â‡„ Banco",desc:"AsÃ­ vuelve la plata que no se pagÃ³: el banco NO hace una transferencia de vuelta. El BCRA, por cuenta de ANSES, debita de la cuenta corriente del banco en el BCRA el importe de los impagos del perÃ­odo; en el mismo acto le acredita las comisiones del servicio. Las reversas (AUH / primeros pagos no formalizados) y el recupero por pagos posteriores al fallecimiento se saldan igual: dÃ©bito en esa cuenta (con comisiones y multa cuando corresponde).",
-        when:"Al cierre del perÃ­odo, cuando el BCRA procesa la rendiciÃ³n; los recuperos por fuera de tÃ©rmino o fallecimiento se debitan cuando ANSES lo determina.",fmt:"DÃ©bito en la cuenta corriente del banco en el BCRA (impagos, reversas, recuperos) + acreditaciÃ³n de comisiones en esa misma cuenta; se devuelve tambiÃ©n el resultado de la rendiciÃ³n (aceptaciÃ³n / inconsistencias).",src:"BCRA A 6386, secc. 2.8 y 3.2; Anexo I, pÃ¡g. 13â€“15"},
-      {id:"E1",type:"instr",dir:"â‡„",pts:[[280,310],[540,405]],lpos:[410,362],short:"RetenciÃ³n / Rehab (email)",
-        route:"ANSES â‡„ Banco",desc:"Orden de RetenciÃ³n (no pago) u Orden de RehabilitaciÃ³n que el banco debe aplicar antes de liberar el pago. Es eventual: solo para los beneficios que ANSES indique.",
-        when:"MÃ­nimo 48 h antes del inicio de pago del beneficio. El banco responde el mail como constancia de recibo y, dentro de las 24 h, informa el resultado de la gestiÃ³n.",
-        fmt:"InstrucciÃ³n por correo electrÃ³nico, con adjunto/evidencia â€” no es archivo de longitud fija.",src:"Anexo I, pÃ¡g. 13"},
+        route:"Beneficiario",desc:"El beneficiario dispone de su dinero: extracciones, pago con débito, compras, transferencias y operaciones por home banking."},
+      {id:"8",type:"archivo",dir:"→",pts:[[800,380],[1070,255]],lpos:[930,300],short:"Rendición + DDJJ",
+        route:"Banco → BCRA",desc:"Rendición de cuentas de todo el período. Incluye las rendiciones fuera de término (FT): impagos FT (rectificar como impago algo rendido como pagado) y pagos FT (rectificar como pagado un impago).",
+        when:"Ordinaria: al cierre del período de vigencia de la liquidación (tardía → multa de 2 jubilaciones mínimas por día hábil). Impagos FT: una sola presentación por mes, entre los días 10 y 20 (sin multa dentro de 90 días; 180 si el beneficiario reside en el exterior). Pagos FT: plazo de 90 días corridos, con gasto del 2% de una jubilación mínima por beneficio.",
+        fmt:"Dos archivos de texto plano (ASCII) «TBBBMMAA.mENTID.txt» (pagadas «P» / impagas «I») + DDJJ (declaración jurada) en original y duplicado; se presenta en la Gerencia de Cuentas Corrientes del BCRA (10 a 15 h). Los casos fuera de término van por SITACI (el canal de ANSES) con nota digitalizada firmada.",src:"BCRA A 6386, secc. 2; Anexo I, pág. 13–15"},
+      {id:"9",type:"dinero",dir:"⇄",pts:[[1150,255],[800,420]],lpos:[985,342],short:"devolución · débito · comisiones",
+        route:"BCRA ⇄ Banco",desc:"Así vuelve la plata que no se pagó: el banco NO hace una transferencia de vuelta. El BCRA, por cuenta de ANSES, debita de la cuenta corriente del banco en el BCRA el importe de los impagos del período; en el mismo acto le acredita las comisiones del servicio. Las reversas (AUH / primeros pagos no formalizados) y el recupero por pagos posteriores al fallecimiento se saldan igual: débito en esa cuenta (con comisiones y multa cuando corresponde).",
+        when:"Al cierre del período, cuando el BCRA procesa la rendición; los recuperos por fuera de término o fallecimiento se debitan cuando ANSES lo determina.",fmt:"Débito en la cuenta corriente del banco en el BCRA (impagos, reversas, recuperos) + acreditación de comisiones en esa misma cuenta; se devuelve también el resultado de la rendición (aceptación / inconsistencias).",src:"BCRA A 6386, secc. 2.8 y 3.2; Anexo I, pág. 13–15"},
+      {id:"E1",type:"instr",dir:"⇄",pts:[[280,310],[540,405]],lpos:[410,362],short:"Retención / Rehab (email)",
+        route:"ANSES ⇄ Banco",desc:"Orden de Retención (no pago) u Orden de Rehabilitación que el banco debe aplicar antes de liberar el pago. Es eventual: solo para los beneficios que ANSES indique.",
+        when:"Mínimo 48 h antes del inicio de pago del beneficio. El banco responde el mail como constancia de recibo y, dentro de las 24 h, informa el resultado de la gestión.",
+        fmt:"Instrucción por correo electrónico, con adjunto/evidencia — no es archivo de longitud fija.",src:"Anexo I, pág. 13"},
       {id:"E2",type:"control",dir:"self",pts:[[678,320],[734,320]],lpos:[706,274],short:"Retenciones",
-        route:"Banco Â· Retenciones / rehabilitaciones",desc:"Aplica sobre el beneficio la retenciÃ³n (no pago) o la rehabilitaciÃ³n antes de liberar el pago. Se dispara por la instrucciÃ³n de ANSES (ver E1).",
-        when:"Solo cuando ANSES instruye una retenciÃ³n o una rehabilitaciÃ³n."},
+        route:"Banco · Retenciones / rehabilitaciones",desc:"Aplica sobre el beneficio la retención (no pago) o la rehabilitación antes de liberar el pago. Se dispara por la instrucción de ANSES (ver E1).",
+        when:"Solo cuando ANSES instruye una retención o una rehabilitación."},
       {id:"E3",type:"control",dir:"self",pts:[[758,320],[798,320]],lpos:[778,274],short:"Legales",
-        route:"Banco Â· ValidaciÃ³n de Legales",desc:"Valida las cuentas judiciales, las autorizaciones (apoderado, tutor, curador) y el consentimiento del titular para liberar los retroactivos de sentencia.",
+        route:"Banco · Validación de Legales",desc:"Valida las cuentas judiciales, las autorizaciones (apoderado, tutor, curador) y el consentimiento del titular para liberar los retroactivos de sentencia.",
         when:"Solo en casos judiciales o con apoderado / representante."},
-      {id:"E4",type:"archivo",dir:"â†’",pts:[[540,430],[280,335]],lpos:[410,390],short:"informa CBU judiciales",
-        route:"Banco â†’ ANSES",desc:"El banco informa a ANSES la CBU (Clave Bancaria Ãšnica) de las cuentas judiciales correspondientes, para que ANSES acredite ahÃ­ los importes ordenados (embargos, tutelas, curatelas) por el Sistema Nacional de Pagos. Los retroactivos de sentencia no se acreditan en la cuenta sueldo hasta el consentimiento del titular.",
-        when:"Mensual, en cumplimiento de las mandas judiciales.",fmt:"Informe de CBU (Clave Bancaria Ãšnica) de cuentas judiciales (acreditaciÃ³n por el Sistema Nacional de Pagos).",src:"Anexo I, pÃ¡g. 10â€“11"},
-      {id:"E5",type:"control",dir:"â†’",pts:[[540,415],[240,365]],lpos:[385,420],short:"fallecimiento Â· reversa",
-        route:"Banco â†’ ANSES",desc:"Control de vida: ante un fallecimiento, el banco cruza con los pagos pendientes/acreditados/rendidos, bloquea o revierte, y rinde como impago (recupero + comisiones + multa). TambiÃ©n revierte a ANSES los crÃ©ditos no formalizados (AUH, AsignaciÃ³n Universal por Hijo / primeros pagos).",
-        when:"Control periÃ³dico contra las novedades de ANSES; se actÃºa al detectar el deceso."}
+      {id:"E4",type:"archivo",dir:"→",pts:[[540,430],[280,335]],lpos:[410,390],short:"informa CBU judiciales",
+        route:"Banco → ANSES",desc:"El banco informa a ANSES la CBU (Clave Bancaria Única) de las cuentas judiciales correspondientes, para que ANSES acredite ahí los importes ordenados (embargos, tutelas, curatelas) por el Sistema Nacional de Pagos. Los retroactivos de sentencia no se acreditan en la cuenta sueldo hasta el consentimiento del titular.",
+        when:"Mensual, en cumplimiento de las mandas judiciales.",fmt:"Informe de CBU (Clave Bancaria Única) de cuentas judiciales (acreditación por el Sistema Nacional de Pagos).",src:"Anexo I, pág. 10–11"},
+      {id:"E5",type:"control",dir:"→",pts:[[540,415],[240,365]],lpos:[385,420],short:"fallecimiento · reversa",
+        route:"Banco → ANSES",desc:"Control de vida: ante un fallecimiento, el banco cruza con los pagos pendientes/acreditados/rendidos, bloquea o revierte, y rinde como impago (recupero + comisiones + multa). También revierte a ANSES los créditos no formalizados (AUH, Asignación Universal por Hijo / primeros pagos).",
+        when:"Control periódico contra las novedades de ANSES; se actúa al detectar el deceso."}
     ];
   
     // ---- nodes ----
@@ -407,7 +407,7 @@
       } else { d=pathD(f.pts); }
       g.appendChild(el("path",{class:"hitbox",d:d}));
       var edge=el("path",{class:"edge",d:d,"marker-end":"url(#arrow-"+f.type+")"});
-      if(f.dir==="â‡„") edge.setAttribute("marker-start","url(#arrow-"+f.type+")");
+      if(f.dir==="⇄") edge.setAttribute("marker-start","url(#arrow-"+f.type+")");
       g.appendChild(edge);
       // number badge (pill, fits "1" or "E1")
       var st=f.npos||f.pts[0], bw=((""+f.id).length>1?24:18);
@@ -452,12 +452,12 @@
       var body=document.createElement("div"); body.className="body";
       var hd=document.createElement("div"); hd.className="hd";
       var r=document.createElement("span"); r.className="route"; r.textContent=f.route; hd.appendChild(r);
-      var tag=document.createElement("span"); tag.className="tag"; tag.textContent=TYPE_LABEL[f.type]+" Â· "+dirLabel(f.dir); hd.appendChild(tag);
+      var tag=document.createElement("span"); tag.className="tag"; tag.textContent=TYPE_LABEL[f.type]+" · "+dirLabel(f.dir); hd.appendChild(tag);
       body.appendChild(hd);
       var ds=document.createElement("div"); ds.className="desc"; ds.textContent=f.desc; body.appendChild(ds);
       if(f.when||f.fmt){
         var mw=document.createElement("div"); mw.className="smeta";
-        if(f.when) mw.appendChild(metaRow("CuÃ¡ndo",f.when));
+        if(f.when) mw.appendChild(metaRow("Cuándo",f.when));
         if(f.fmt)  mw.appendChild(metaRow("Formato",f.fmt));
         body.appendChild(mw);
       }
@@ -483,7 +483,7 @@
   
     function metaRow(k,v){
       var row=document.createElement("div"); row.className="mrow";
-      var mk=document.createElement("span"); mk.className="mk"; mk.textContent=k+" â€”"; row.appendChild(mk);
+      var mk=document.createElement("span"); mk.className="mk"; mk.textContent=k+" —"; row.appendChild(mk);
       var mv=document.createElement("span"); mv.className="mv"; mv.textContent=v; row.appendChild(mv);
       return row;
     }
@@ -499,7 +499,7 @@
       var ds=document.createElement("div"); ds.className="bdesc"; ds.textContent=data.desc; bubble.appendChild(ds);
       if(data.when||data.fmt){
         var mw=document.createElement("div"); mw.className="bmeta";
-        if(data.when) mw.appendChild(metaRow("CuÃ¡ndo",data.when));
+        if(data.when) mw.appendChild(metaRow("Cuándo",data.when));
         if(data.fmt)  mw.appendChild(metaRow("Formato",data.fmt));
         bubble.appendChild(mw);
       }
@@ -527,7 +527,7 @@
       FLOWS.forEach(function(x){ if(x.id===id) f=x; });
       if(!fe||!f) return;
       clearActive();
-      fillBubble({title:f.route, tag:TYPE_LABEL[f.type]+" Â· "+dirLabel(f.dir), colorVar:"--f-"+f.type, desc:f.desc, when:f.when, fmt:f.fmt, src:f.src});
+      fillBubble({title:f.route, tag:TYPE_LABEL[f.type]+" · "+dirLabel(f.dir), colorVar:"--f-"+f.type, desc:f.desc, when:f.when, fmt:f.fmt, src:f.src});
       if(fromList){ try{ fe.scrollIntoView({inline:"center",block:"nearest"}); }catch(e){} }
       placeBubble(fe);
       fe.classList.add("active"); activeEl=fe;
@@ -576,4 +576,3 @@
   </script>
 </body>
 </html>
-
