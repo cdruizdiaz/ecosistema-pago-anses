@@ -178,6 +178,11 @@
     #giscus-all:hover{border-color:var(--fg)}
     .bcomment{display:block; width:100%; margin-top:.6rem; cursor:pointer; border:0; border-radius:8px; padding:.5rem .7rem; font-size:.84rem; font-weight:600; font-family:inherit; color:#fff; background:var(--a-banco)}
     .bcomment:hover{filter:brightness(1.06)}
+    .bdisenos{margin-top:.7rem; padding-top:.6rem; border-top:1px solid var(--line-soft); display:flex; flex-direction:column; gap:.35rem}
+    .bdlabel{font-size:.72rem; letter-spacing:.04em; text-transform:uppercase; color:var(--muted); font-weight:600}
+    .bdiseno{display:flex; align-items:center; gap:.4rem; width:100%; text-align:left; cursor:pointer; border:1px solid var(--f-archivo); background:color-mix(in srgb,var(--f-archivo) 12%,transparent); color:var(--fg); border-radius:8px; padding:.42rem .6rem; font-size:.82rem; font-weight:600; font-family:inherit}
+    .bdiseno::before{content:"▤"; color:var(--f-archivo); font-size:.95rem}
+    .bdiseno:hover{background:color-mix(in srgb,var(--f-archivo) 22%,transparent)}
     #giscus-slot{min-height:40px}
     .giscus-fallback{background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:.85rem 1rem; font-size:.88rem; color:var(--fg)}
     .giscus-fallback a{color:var(--a-banco); font-weight:600}
@@ -399,7 +404,8 @@
       {id:"1",type:"archivo",dir:"→",pts:[[280,255],[540,355]],lpos:[410,300],short:"Liquidaciones + novedades",
         route:"ANSES → Banco",desc:"Liquidación de pago por producto + novedades (cambios de agente pagador, suspensiones, bajas) + complementarias. Incluye el producto «Retroactivos de Sentencias Judiciales», con ruteo especial.",
         when:"Disponible 5 días hábiles antes de la fecha de pago. La fecha de inicio de pago va en cada registro; el período de vigencia, en la cabecera. Es el tiempo de antelación con que el banco tiene la info antes de acreditar.",
-        fmt:"Archivo de texto plano (ASCII) de longitud fija, por SITACI (Sistema Integrado de Transferencia, Almacenamiento y Control de la Información, el canal de ANSES) — Diseño de Registro Único de Liquidación (Anexo II).",src:"Anexo I, pág. 1, 9 y 13"},
+        fmt:"Archivo de texto plano (ASCII) de longitud fija, por SITACI (Sistema Integrado de Transferencia, Almacenamiento y Control de la Información, el canal de ANSES) — Diseño de Registro Único de Liquidación (Anexo II).",src:"Anexo I, pág. 1, 9 y 13",
+        disenos:[["ope-det","OPE · Detalle (liquidación)"],["apertura","Apertura de cuenta y novedades"],["novedades","Novedades de agente pagador"]]},
       {id:"2",type:"dinero",dir:"→",pts:[[170,215],[170,95],[1102,95],[1102,155]],npos:[170,180],lpos:[636,82],short:"deposita fondos · ctas pares/impares",
         route:"ANSES → BCRA",desc:"ANSES deposita los fondos para que el banco pueda pagar.",
         when:"Hasta 24 h hábiles antes del inicio del período de pago.",
@@ -409,10 +415,12 @@
         when:"Desde el inicio del período de pago.",fmt:"Disponibilidad en las cuentas especiales del banco en el BCRA."},
       {id:"4",type:"control",dir:"self",pts:[[556,320],[604,320]],lpos:[580,274],short:"Apertura",
         route:"Banco · Apertura de cuentas",desc:"Da de alta al cliente y abre la caja de ahorro previsional asociada, según las novedades que vienen en la liquidación de ANSES.",
-        when:"Al procesar la liquidación, cuando hay altas o reactivaciones de beneficios."},
+        when:"Al procesar la liquidación, cuando hay altas o reactivaciones de beneficios.",
+        disenos:[["apertura","Apertura de cuenta y novedades"],["actualizacion","Actualización de datos del beneficiario"]]},
       {id:"5",type:"control",dir:"self",pts:[[626,320],[662,320]],lpos:[644,274],short:"OPE",
         route:"Banco · Emisión de OPE y tarjetas",desc:"Emite la OPE (Orden de Pago Electrónica) para los productos que se cobran por ventanilla, y las tarjetas de débito del titular y del apoderado.",
-        when:"Antes de poner el beneficio al cobro."},
+        when:"Antes de poner el beneficio al cobro.",
+        disenos:[["ope-cab","OPE · Cabecera"],["ope-det","OPE · Detalle"]]},
       {id:"6",type:"dinero",dir:"→",pts:[[800,440],[1010,510]],lpos:[905,488],short:"acreditación / OPE",
         route:"Banco → Beneficiario",desc:"Acredita en la cuenta sueldo de la seguridad social / caja previsional, o paga por ventanilla con OPE (Orden de Pago Electrónica); entrega el extracto o detalle de la liquidación.",
         when:"En la fecha de pago que indica el calendario, por beneficio.",fmt:"Acreditación en cuenta, o pago por ventanilla con OPE."},
@@ -421,10 +429,12 @@
       {id:"8",type:"archivo",dir:"→",pts:[[800,380],[1070,255]],lpos:[930,300],short:"Rendición + DDJJ",
         route:"Banco → BCRA",desc:"Rendición de cuentas de todo el período. Incluye las rendiciones fuera de término (FT): impagos FT (rectificar como impago algo rendido como pagado) y pagos FT (rectificar como pagado un impago).",
         when:"Ordinaria: al cierre del período de vigencia de la liquidación (tardía → multa de 2 jubilaciones mínimas por día hábil). Impagos FT: una sola presentación por mes, entre los días 10 y 20 (sin multa dentro de 90 días; 180 si el beneficiario reside en el exterior). Pagos FT: plazo de 90 días corridos, con gasto del 2% de una jubilación mínima por beneficio.",
-        fmt:"Dos archivos de texto plano (ASCII) «TBBBMMAA.mENTID.txt» (pagadas «P» / impagas «I») + DDJJ (declaración jurada) en original y duplicado; se presenta en la Gerencia de Cuentas Corrientes del BCRA (10 a 15 h). Los casos fuera de término van por SITACI (el canal de ANSES) con nota digitalizada firmada.",src:"BCRA A 6386, secc. 2; Anexo I, pág. 13–15"},
+        fmt:"Dos archivos de texto plano (ASCII) «TBBBMMAA.mENTID.txt» (pagadas «P» / impagas «I») + DDJJ (declaración jurada) en original y duplicado; se presenta en la Gerencia de Cuentas Corrientes del BCRA (10 a 15 h). Los casos fuera de término van por SITACI (el canal de ANSES) con nota digitalizada firmada.",src:"BCRA A 6386, secc. 2; Anexo I, pág. 13–15",
+        disenos:[["ren-cab","Rendición · Cabecera"],["ren-det","Rendición · Detalle"],["fuera","Rendiciones fuera de término"]]},
       {id:"9",type:"dinero",dir:"⇄",pts:[[1150,255],[800,420]],lpos:[985,342],short:"devolución · débito · comisiones",
         route:"BCRA ⇄ Banco",desc:"Así vuelve la plata que no se pagó: el banco NO hace una transferencia de vuelta. El BCRA, por cuenta de ANSES, debita de la cuenta corriente del banco en el BCRA el importe de los impagos del período; en el mismo acto le acredita las comisiones del servicio. Las reversas (AUH / primeros pagos no formalizados) y el recupero por pagos posteriores al fallecimiento se saldan igual: débito en esa cuenta (con comisiones y multa cuando corresponde).",
-        when:"Al cierre del período, cuando el BCRA procesa la rendición; los recuperos por fuera de término o fallecimiento se debitan cuando ANSES lo determina.",fmt:"Débito en la cuenta corriente del banco en el BCRA (impagos, reversas, recuperos) + acreditación de comisiones en esa misma cuenta; se devuelve también el resultado de la rendición (aceptación / inconsistencias).",src:"BCRA A 6386, secc. 2.8 y 3.2; Anexo I, pág. 13–15"},
+        when:"Al cierre del período, cuando el BCRA procesa la rendición; los recuperos por fuera de término o fallecimiento se debitan cuando ANSES lo determina.",fmt:"Débito en la cuenta corriente del banco en el BCRA (impagos, reversas, recuperos) + acreditación de comisiones en esa misma cuenta; se devuelve también el resultado de la rendición (aceptación / inconsistencias).",src:"BCRA A 6386, secc. 2.8 y 3.2; Anexo I, pág. 13–15",
+        disenos:[["ren-det","Rendición · Detalle"],["fuera","Rendiciones fuera de término"]]},
       {id:"E1",type:"instr",dir:"⇄",pts:[[280,310],[540,405]],lpos:[410,362],short:"Retención / Rehab (email)",
         route:"ANSES ⇄ Banco",desc:"Orden de Retención (no pago) u Orden de Rehabilitación que el banco debe aplicar antes de liberar el pago. Es eventual: solo para los beneficios que ANSES indique.",
         when:"Mínimo 48 h antes del inicio de pago del beneficio. El banco responde el mail como constancia de recibo y, dentro de las 24 h, informa el resultado de la gestión.",
@@ -571,6 +581,16 @@
         bubble.appendChild(mw);
       }
       if(data.src){ var sc=document.createElement("div"); sc.className="bsrc"; sc.textContent="Fuente: "+data.src; bubble.appendChild(sc); }
+      if(data.disenos && data.disenos.length){
+        var dz=document.createElement("div"); dz.className="bdisenos";
+        var dl=document.createElement("div"); dl.className="bdlabel"; dl.textContent="Diseño de registro de este archivo:"; dz.appendChild(dl);
+        data.disenos.forEach(function(p){
+          var db=document.createElement("button"); db.type="button"; db.className="bdiseno"; db.textContent=p[1];
+          db.addEventListener("click",function(e){ e.stopPropagation(); closeBubble(); if(window.__openDiseno) window.__openDiseno(p[0]); });
+          dz.appendChild(db);
+        });
+        bubble.appendChild(dz);
+      }
       if(data.term){
         var cb=document.createElement("button"); cb.className="bcomment"; cb.type="button";
         cb.textContent="Comentarios de este elemento";
@@ -625,7 +645,7 @@
       FLOWS.forEach(function(x){ if(x.id===id) f=x; });
       if(!fe||!f) return;
       clearActive();
-      fillBubble({title:f.route, tag:TYPE_LABEL[f.type]+" · "+dirLabel(f.dir), colorVar:"--f-"+f.type, desc:f.desc, when:f.when, fmt:f.fmt, src:f.src, term:"flujo-"+f.id, clabel:"Flujo "+f.id+" · "+f.route});
+      fillBubble({title:f.route, tag:TYPE_LABEL[f.type]+" · "+dirLabel(f.dir), colorVar:"--f-"+f.type, desc:f.desc, when:f.when, fmt:f.fmt, src:f.src, disenos:f.disenos, term:"flujo-"+f.id, clabel:"Flujo "+f.id+" · "+f.route});
       if(fromList){ try{ fe.scrollIntoView({inline:"center",block:"nearest"}); }catch(e){} }
       placeBubble(fe);
       fe.classList.add("active"); activeEl=fe;
@@ -995,6 +1015,15 @@
     tabs.forEach(function(t){ t.addEventListener("click",function(){ showView(t.dataset.view); window.scrollTo({top:0,behavior:"smooth"}); }); });
     var h=(location.hash||"").replace("#","");
     if(h==="disenos") showView("disenos");
+  
+    // abrir un diseño puntual desde un flujo del ecosistema
+    window.__openDiseno=function(id){
+      showView("disenos");
+      var btn=menu.querySelector('button[data-id="'+id+'"]');
+      if(btn){ btn.click(); }
+      var vd=document.getElementById("view-disenos");
+      if(vd){ try{ vd.scrollIntoView({behavior:"smooth",block:"start"}); }catch(e){ window.scrollTo(0,0); } }
+    };
   })();
   </script>
 </body>
