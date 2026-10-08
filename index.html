@@ -169,6 +169,12 @@
     @media (max-width:720px){ .retorno .rcards{grid-template-columns:1fr} }
     .comments{margin-top:1.8rem}
     .comments .chint{color:var(--muted); font-size:.86rem; margin:.2rem 0 .9rem; max-width:70ch}
+    .cbar{display:flex; flex-wrap:wrap; align-items:center; gap:.6rem; margin:0 0 .8rem; padding:.5rem .7rem; background:var(--surface-2); border:1px solid var(--line-soft); border-radius:9px}
+    #giscus-current{font-weight:600; font-size:.88rem; min-width:0}
+    #giscus-all{margin-left:auto; cursor:pointer; border:1px solid var(--line); background:var(--surface); color:var(--fg); border-radius:7px; padding:.28rem .6rem; font-size:.8rem; font-family:inherit}
+    #giscus-all:hover{border-color:var(--fg)}
+    .bcomment{display:block; width:100%; margin-top:.6rem; cursor:pointer; border:0; border-radius:8px; padding:.5rem .7rem; font-size:.84rem; font-weight:600; font-family:inherit; color:#fff; background:var(--a-banco)}
+    .bcomment:hover{filter:brightness(1.06)}
     #giscus-slot{min-height:40px}
     .giscus-fallback{background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:.85rem 1rem; font-size:.88rem; color:var(--fg)}
     .giscus-fallback a{color:var(--a-banco); font-weight:600}
@@ -284,15 +290,20 @@
     <h2 class="section">Los flujos, paso a paso</h2>
     <ol class="steps" id="steps"></ol>
   
-    <section class="comments">
+    <section class="comments" id="comentarios">
       <h2 class="section">Comentarios del equipo</h2>
-      <p class="chint">Dejá una aclaración, una corrección o una duda sobre el circuito. Los comentarios quedan en las Discusiones del repositorio; para escribir hay que iniciar sesión con la cuenta de GitHub.</p>
+      <p class="chint">Tocá <strong>“Comentarios de este elemento”</strong> dentro de cualquier flecha o recuadro para comentar ese paso en particular; cada elemento tiene su propio hilo. También podés dejar comentarios generales acá. Para escribir hay que iniciar sesión con la cuenta de GitHub.</p>
+      <div class="cbar">
+        <span id="giscus-current">Comentarios de: todo el diagrama</span>
+        <button id="giscus-all" type="button">Ver comentarios generales</button>
+      </div>
       <div id="giscus-slot"><script src="https://giscus.app/client.js"
           data-repo="cdruizdiaz/ecosistema-pago-anses"
           data-repo-id="R_kgDOVBVbOg"
           data-category="General"
           data-category-id="DIC_kwDOVBVbOs4DHWuH"
-          data-mapping="pathname"
+          data-mapping="specific"
+          data-term="general"
           data-strict="0"
           data-reactions-enabled="1"
           data-emit-metadata="0"
@@ -504,7 +515,36 @@
         bubble.appendChild(mw);
       }
       if(data.src){ var sc=document.createElement("div"); sc.className="bsrc"; sc.textContent="Fuente: "+data.src; bubble.appendChild(sc); }
+      if(data.term){
+        var cb=document.createElement("button"); cb.className="bcomment"; cb.type="button";
+        cb.textContent="Comentarios de este elemento";
+        cb.addEventListener("click",function(e){ e.stopPropagation(); commentOn(data.term,data.clabel); });
+        bubble.appendChild(cb);
+      }
     }
+  
+    // --- comentarios por elemento (giscus con término dinámico) ---
+    var pendingTerm=null;
+    function applyTerm(term){
+      var f=document.querySelector("#giscus-slot iframe.giscus-frame");
+      if(f){ f.contentWindow.postMessage({giscus:{setConfig:{term:term}}},"https://giscus.app"); return true; }
+      pendingTerm=term; return false;
+    }
+    window.addEventListener("message",function(e){
+      if(e.origin!=="https://giscus.app") return;
+      if(pendingTerm){ var t=pendingTerm; pendingTerm=null; applyTerm(t); }
+    });
+    function commentOn(term,label){
+      var cur=document.getElementById("giscus-current");
+      if(cur) cur.textContent="Comentarios de: "+(label||"todo el diagrama");
+      applyTerm(term);
+      closeBubble();
+      var cs=document.querySelector(".comments");
+      if(cs){ try{ cs.scrollIntoView({behavior:"smooth",block:"start"}); }catch(e){ cs.scrollIntoView(); } }
+    }
+    window.__commentOn=commentOn;
+    (function(){ var ga=document.getElementById("giscus-all");
+      if(ga) ga.addEventListener("click",function(){ commentOn("general","todo el diagrama"); }); })();
   
     function placeBubble(targetEl){
       var sR=stage.getBoundingClientRect(), r=targetEl.getBoundingClientRect();
@@ -527,7 +567,7 @@
       FLOWS.forEach(function(x){ if(x.id===id) f=x; });
       if(!fe||!f) return;
       clearActive();
-      fillBubble({title:f.route, tag:TYPE_LABEL[f.type]+" · "+dirLabel(f.dir), colorVar:"--f-"+f.type, desc:f.desc, when:f.when, fmt:f.fmt, src:f.src});
+      fillBubble({title:f.route, tag:TYPE_LABEL[f.type]+" · "+dirLabel(f.dir), colorVar:"--f-"+f.type, desc:f.desc, when:f.when, fmt:f.fmt, src:f.src, term:"flujo-"+f.id, clabel:"Flujo "+f.id+" · "+f.route});
       if(fromList){ try{ fe.scrollIntoView({inline:"center",block:"nearest"}); }catch(e){} }
       placeBubble(fe);
       fe.classList.add("active"); activeEl=fe;
@@ -536,7 +576,7 @@
     function openForNode(key,gEl){
       var n=NODES[key]; if(!n) return;
       clearActive();
-      fillBubble({title:n.title, tag:"Actor", colorVar:"--a-"+n.accent, desc:n.desc, src:null});
+      fillBubble({title:n.title, tag:"Actor", colorVar:"--a-"+n.accent, desc:n.desc, src:null, term:"nodo-"+key, clabel:n.title});
       placeBubble(gEl);
       gEl.classList.add("active"); activeEl=gEl;
     }
