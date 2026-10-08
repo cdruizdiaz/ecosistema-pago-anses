@@ -175,6 +175,16 @@
     .cmenu button strong{font-size:.84rem; font-weight:600}
     .cmenu button .csub2{color:var(--muted); font-size:.74rem; line-height:1.3}
     .cmenu button[aria-pressed="true"]{border-color:var(--a-banco); background:color-mix(in srgb,var(--a-banco) 12%,var(--surface))}
+    .cmenu button{position:relative}
+    .cbadge{position:absolute; top:.4rem; right:.45rem; min-width:1.15rem; height:1.15rem; padding:0 .3rem; border-radius:999px; background:#d1495b; color:#fff; font-size:.7rem; font-weight:700; display:flex; align-items:center; justify-content:center; font-variant-numeric:tabular-nums}
+    .bcomment{position:relative}
+    .bcbadge{position:absolute; top:-6px; right:-6px; min-width:1.2rem; height:1.2rem; padding:0 .32rem; border-radius:999px; background:#d1495b; color:#fff; font-size:.72rem; font-weight:700; display:flex; align-items:center; justify-content:center; border:2px solid var(--surface)}
+    .chead-meta{display:flex; flex-wrap:wrap; align-items:center; gap:.6rem; margin-top:.5rem}
+    .ccount{font-size:.82rem; font-weight:600; color:var(--muted)}
+    .ccount.has{color:#d1495b}
+    #cscan-btn{cursor:pointer; border:1px solid var(--line); background:var(--surface); color:var(--fg); border-radius:7px; padding:.28rem .6rem; font-size:.78rem; font-family:inherit}
+    #cscan-btn:hover{border-color:var(--fg)}
+    #cscan-note{font-size:.78rem; color:var(--muted)}
     .cmain{min-width:0}
     .chead{background:var(--surface-2); border:1px solid var(--line-soft); border-radius:10px; padding:.7rem .85rem; margin:0 0 .9rem}
     .chead h3{margin:0; font-size:1.02rem; font-weight:600; text-wrap:balance}
@@ -381,6 +391,11 @@
           <div class="chead">
             <h3 id="giscus-current">Todo el diagrama</h3>
             <p class="csub" id="giscus-sub">Comentarios generales sobre el circuito completo.</p>
+            <div class="chead-meta">
+              <span id="giscus-count" class="ccount">—</span>
+              <button id="cscan-btn" type="button">Actualizar contadores</button>
+              <span id="cscan-note" hidden></span>
+            </div>
           </div>
           <div id="giscus-slot"><script src="https://giscus.app/client.js"
           data-repo="cdruizdiaz/ecosistema-pago-anses"
@@ -624,44 +639,86 @@
         bubble.appendChild(dz);
       }
       if(data.term){
-        var cb=document.createElement("button"); cb.className="bcomment"; cb.type="button";
-        cb.textContent="Comentarios de este elemento";
-        cb.addEventListener("click",function(e){ e.stopPropagation(); commentOn(data.term,data.clabel); });
+        var cb=document.createElement("button"); cb.className="bcomment"; cb.type="button"; cb.setAttribute("data-term",data.term);
+        var cbt=document.createElement("span"); cbt.textContent="Comentarios de este elemento"; cb.appendChild(cbt);
+        cb.addEventListener("click",function(e){ e.stopPropagation(); commentOn(data.term); });
         bubble.appendChild(cb);
+        if(typeof updateBadges==="function") updateBadges();
       }
     }
   
     // --- comentarios por elemento (giscus con término dinámico) ---
-    var pendingTerm=null;
+    var pendingTerm=null, currentTerm="general";
     function applyTerm(term){
       var f=document.querySelector("#giscus-slot iframe.giscus-frame");
       if(f){ f.contentWindow.postMessage({giscus:{setConfig:{term:term}}},"https://giscus.app"); return true; }
       pendingTerm=term; return false;
     }
+    // contadores por objeto (persisten por navegador)
+    var counts={};
+    try{ counts=JSON.parse(localStorage.getItem("anses_cc")||"{}")||{}; }catch(e){ counts={}; }
+    function saveCounts(){ try{ localStorage.setItem("anses_cc",JSON.stringify(counts)); }catch(e){} }
+    function nFor(t){ return counts[t]||0; }
+    function updateBadges(){
+      var cm=document.getElementById("cmenu");
+      if(cm) Array.prototype.forEach.call(cm.querySelectorAll("button"),function(b){
+        var n=nFor(b.dataset.term), bd=b.querySelector(".cbadge");
+        if(n>0){ if(!bd){ bd=document.createElement("span"); bd.className="cbadge"; b.appendChild(bd);} bd.textContent=(n>99?"99+":n); }
+        else if(bd){ bd.parentNode.removeChild(bd); }
+      });
+      var cb=document.querySelector(".bubble .bcomment");
+      if(cb && cb.getAttribute("data-term")){ var n2=nFor(cb.getAttribute("data-term")); var b2=cb.querySelector(".bcbadge");
+        if(n2>0){ if(!b2){ b2=document.createElement("span"); b2.className="bcbadge"; cb.appendChild(b2);} b2.textContent=(n2>99?"99+":n2); } else if(b2){ b2.parentNode.removeChild(b2); } }
+      var hc=document.getElementById("giscus-count");
+      if(hc){ var n3=nFor(currentTerm); hc.textContent=(n3>0?(n3+" comentario"+(n3>1?"s":"")):"Sin comentarios todavía"); hc.classList.toggle("has",n3>0); }
+    }
     window.addEventListener("message",function(e){
       if(e.origin!=="https://giscus.app") return;
+      var g=e.data && e.data.giscus;
+      if(g && g.discussion && g.discussion.title){
+        counts[g.discussion.title]=(g.discussion.totalCommentCount||0)+(g.discussion.totalReplyCount||0);
+        saveCounts(); updateBadges();
+      }
       if(pendingTerm){ var t=pendingTerm; pendingTerm=null; applyTerm(t); }
     });
+  
     // modelo único de objetos comentables
     var OBJS=[{term:"general", title:"Todo el diagrama", sub:"Comentarios generales sobre el circuito completo."}];
     FLOWS.forEach(function(f){ OBJS.push({term:"flujo-"+f.id, title:"Flujo "+f.id+" · "+f.route, sub:f.short}); });
     Object.keys(NODES).forEach(function(k){ var n=NODES[k]; OBJS.push({term:"nodo-"+k, title:n.title, sub:n.sub}); });
     var OBJMAP={}; OBJS.forEach(function(o){ OBJMAP[o.term]=o; });
+    var OBJTERMS=OBJS.map(function(o){return o.term;});
   
     function commentOn(term){
       var o=OBJMAP[term]||{title:term,sub:""};
+      currentTerm=term;
       if(window.__showView) window.__showView("comentarios");
       var cur=document.getElementById("giscus-current"); if(cur) cur.textContent=o.title;
       var sb=document.getElementById("giscus-sub"); if(sb) sb.textContent=o.sub||"";
       applyTerm(term);
       closeBubble();
       var cm=document.getElementById("cmenu");
-      if(cm){ cm.querySelectorAll("button").forEach(function(b){ b.setAttribute("aria-pressed", b.dataset.term===term?"true":"false"); }); }
+      if(cm){ Array.prototype.forEach.call(cm.querySelectorAll("button"),function(b){ b.setAttribute("aria-pressed", b.dataset.term===term?"true":"false"); }); }
       var ch=document.querySelector(".chead");
       if(ch){ ch.classList.remove("flash"); void ch.offsetWidth; ch.classList.add("flash"); }
+      updateBadges();
       try{ window.scrollTo({top:0,behavior:"smooth"}); }catch(e){ window.scrollTo(0,0); }
     }
     window.__commentOn=commentOn;
+  
+    // escaneo de contadores (recorre los hilos y registra cuántos comentarios tiene cada uno)
+    var scanning=false, scanIdx=0, scanSaved="general";
+    function scanStep(){
+      var note=document.getElementById("cscan-note");
+      if(scanIdx>=OBJTERMS.length){ scanning=false; if(note)note.hidden=true; saveCounts(); updateBadges(); applyTerm(scanSaved); return; }
+      if(note){ note.hidden=false; note.textContent="Buscando comentarios… ("+(scanIdx+1)+"/"+OBJTERMS.length+")"; }
+      var t=OBJTERMS[scanIdx];
+      applyTerm(t);
+      setTimeout(function(){ if(!(t in counts)) counts[t]=0; scanIdx++; scanStep(); }, 650);
+    }
+    function scanStart(){ if(scanning) return; scanning=true; scanIdx=0; scanSaved=currentTerm; scanStep(); }
+    var scannedOnce=false;
+    window.__onComentarios=function(){ if(!scannedOnce){ scannedOnce=true; setTimeout(scanStart,400); } };
   
     // selector de objetos en la pestaña Comentarios
     (function(){
@@ -679,6 +736,9 @@
       FLOWS.forEach(function(f){ addItem(OBJMAP["flujo-"+f.id]); });
       addGroup("Actores");
       Object.keys(NODES).forEach(function(k){ addItem(OBJMAP["nodo-"+k]); });
+      var sb=document.getElementById("cscan-btn");
+      if(sb) sb.addEventListener("click",function(){ scanStart(); });
+      updateBadges();
     })();
   
     function placeBubble(targetEl){
@@ -1075,6 +1135,7 @@
       Object.keys(views).forEach(function(k){ if(views[k]) views[k].hidden = (k!==name); });
       tabs.forEach(function(t){ t.setAttribute("aria-pressed", t.dataset.view===name?"true":"false"); });
       try{ if(history.replaceState) history.replaceState(null,"","#"+name); }catch(e){}
+      if(name==="comentarios" && window.__onComentarios) window.__onComentarios();
     }
     window.__showView=showView;
     tabs.forEach(function(t){ t.addEventListener("click",function(){ showView(t.dataset.view); window.scrollTo({top:0,behavior:"smooth"}); }); });
