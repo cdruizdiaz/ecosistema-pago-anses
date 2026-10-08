@@ -406,7 +406,7 @@
           data-term="general"
           data-strict="0"
           data-reactions-enabled="1"
-          data-emit-metadata="0"
+          data-emit-metadata="1"
           data-input-position="top"
           data-theme="preferred_color_scheme"
           data-lang="es"
@@ -737,9 +737,16 @@
       addGroup("Actores");
       Object.keys(NODES).forEach(function(k){ addItem(OBJMAP["nodo-"+k]); });
       var sb=document.getElementById("cscan-btn");
-      if(sb) sb.addEventListener("click",function(){ scanStart(); });
+      if(sb) sb.addEventListener("click",function(){ scannedOnce=true; scanStart(); });
       updateBadges();
     })();
+  
+    // escaneo inicial en segundo plano (la vista de comentarios está oculta: no se ve)
+    (function waitAndScan(tries){
+      if(scannedOnce) return;
+      if(document.querySelector("#giscus-slot iframe.giscus-frame")){ scannedOnce=true; setTimeout(scanStart,900); return; }
+      if(tries>0) setTimeout(function(){ waitAndScan(tries-1); },700);
+    })(25);
   
     function placeBubble(targetEl){
       var sR=stage.getBoundingClientRect(), r=targetEl.getBoundingClientRect();
