@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <style>
+    html{color-scheme:light}
+    body{margin:0}
+    img{max-width:100%}
+    [hidden]{display:none!important}
+  </style>
+  <title>Ecosistema de Pago ANSES</title>
+  <style>
+    /* Layout: hub map — ANSES a la izquierda, Banco Bica al centro, BCRA y beneficiario a la derecha. Flechas y nodos clickeables abren una burbuja con su explicación. */
+    :root{
+      --bg:#eef1f5; --surface:#ffffff; --surface-2:#f6f8fb;
+      --fg:#17202e; --muted:#5c6878; --line:#d3dae3; --line-soft:#e4e9f0;
+      --f-archivo:#2f6fb0; --f-dinero:#1b9566; --f-instr:#c67f17;
+      --f-accion:#8a4fd0; --f-control:#d1495b;
+      --a-anses:#3b6fd4; --a-bcra:#6b5bd0; --a-banco:#1b9566;
+      --a-justicia:#d1495b; --a-benef:#8a4fd0; --a-terceros:#c67f17;
+      --shadow:0 1px 2px rgba(20,32,50,.06),0 6px 20px rgba(20,32,50,.07);
+      --pop:0 10px 34px rgba(20,32,50,.22);
+    }
+    @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+      --bg:#0f1521; --surface:#18202e; --surface-2:#131a26;
+      --fg:#e7ecf3; --muted:#9aa6b6; --line:#2c3749; --line-soft:#232d3c;
+      --f-archivo:#5fa0e0; --f-dinero:#43c892; --f-instr:#e3a73e;
+      --f-accion:#b388f0; --f-control:#f0697d;
+      --a-anses:#6a9bf0; --a-bcra:#9d8df0; --a-banco:#43c892;
+      --a-justicia:#f0697d; --a-benef:#b388f0; --a-terceros:#e3a73e;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);
+      --pop:0 12px 38px rgba(0,0,0,.55);
+      color-scheme:dark;
+    }}
+    :root[data-theme="dark"]{
+      --bg:#0f1521; --surface:#18202e; --surface-2:#131a26;
+      --fg:#e7ecf3; --muted:#9aa6b6; --line:#2c3749; --line-soft:#232d3c;
+      --f-archivo:#5fa0e0; --f-dinero:#43c892; --f-instr:#e3a73e;
+      --f-accion:#b388f0; --f-control:#f0697d;
+      --a-anses:#6a9bf0; --a-bcra:#9d8df0; --a-banco:#43c892;
+      --a-justicia:#f0697d; --a-benef:#b388f0; --a-terceros:#e3a73e;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);
+      --pop:0 12px 38px rgba(0,0,0,.55);
+      color-scheme:dark;
+    }
+  
+    *{box-sizing:border-box}
+    body{background:var(--bg); color:var(--fg);
+      font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif; line-height:1.5}
+    .wrap{max-width:1140px; margin:0 auto; padding-block:28px; padding-left:16px; padding-right:16px}
+  
+    header h1{font-size:clamp(1.5rem,4vw,2.1rem); font-weight:600; letter-spacing:-.01em; margin:0 0 .3rem; text-wrap:balance}
+    header p.sub{margin:0; color:var(--muted); max-width:72ch; font-size:.98rem}
+    .eyebrow{font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--a-banco); font-weight:600; margin:0 0 .5rem}
+  
+    .controls{display:flex; flex-wrap:wrap; gap:1.4rem; margin:1.5rem 0 .6rem; align-items:flex-start}
+    .legend{display:flex; flex-direction:column; gap:.5rem; min-width:0}
+    .legend h2{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin:0 0 .2rem; font-weight:600}
+    .legend .row{display:flex; flex-wrap:wrap; gap:.5rem}
+    .filterbtn{display:inline-flex; align-items:center; gap:.45rem; cursor:pointer;
+      background:var(--surface); border:1px solid var(--line); color:var(--fg);
+      border-radius:999px; padding:.34rem .7rem; font-size:.82rem; font-family:inherit;
+      transition:border-color .15s, background .15s, opacity .15s}
+    .filterbtn .swatch{width:22px; height:3px; border-radius:2px; flex:none}
+    .filterbtn[aria-pressed="true"]{border-color:var(--fg); background:var(--surface-2); font-weight:600}
+    .filterbtn:focus-visible{outline:2px solid var(--a-anses); outline-offset:2px}
+    .akey{display:inline-flex; align-items:center; gap:.4rem; font-size:.8rem; color:var(--muted)}
+    .akey .dot{width:10px;height:10px;border-radius:3px;flex:none}
+    .hint{font-size:.82rem; color:var(--muted); margin:.2rem 0 .3rem}
+  
+    .stage{position:relative}
+    .diagram-wrap{background:var(--surface); border:1px solid var(--line); border-radius:14px;
+      box-shadow:var(--shadow); padding:10px; overflow-x:auto; margin-top:.3rem}
+    svg.scene{width:100%; min-width:780px; height:auto; display:block}
+    svg.scene text{font-family:"IBM Plex Sans",sans-serif; fill:var(--fg)}
+    .node{cursor:pointer}
+    .node .box{fill:var(--surface); stroke:var(--line); stroke-width:1.5; transition:stroke-width .12s}
+    .node .title{font-weight:600; font-size:17px}
+    .node .sub{fill:var(--muted); font-size:11.5px}
+    .node.hub .box{fill:var(--surface-2); stroke-width:2}
+    .node.hub .title{font-size:19px}
+    .node:hover .box, .node:focus-visible .box{stroke:var(--fg); stroke-width:2.2}
+    .node.active .box{stroke:var(--fg); stroke-width:2.6}
+    .node:focus-visible{outline:none}
+  
+    .flow{cursor:pointer}
+    .flow .edge{fill:none; stroke-width:2.4; stroke-linejoin:round; stroke-linecap:round; transition:stroke-width .12s, opacity .15s}
+    .flow .hitbox{fill:none; stroke:transparent; stroke-width:16; stroke-linecap:round}
+    .flow .lbl-tx{font-size:11.5px; fill:var(--fg)}
+    .flow .num{font-size:10.5px; font-weight:700; fill:#fff}
+    .flow.archivo .edge{stroke:var(--f-archivo)} .flow.archivo .num-bg{fill:var(--f-archivo)}
+    .flow.dinero  .edge{stroke:var(--f-dinero)}  .flow.dinero  .num-bg{fill:var(--f-dinero)}
+    .flow.instr   .edge{stroke:var(--f-instr); stroke-dasharray:7 5} .flow.instr .num-bg{fill:var(--f-instr)}
+    .flow.accion  .edge{stroke:var(--f-accion)}  .flow.accion  .num-bg{fill:var(--f-accion)}
+    .flow.control .edge{stroke:var(--f-control); stroke-dasharray:3 4} .flow.control .num-bg{fill:var(--f-control)}
+    #arrow-archivo path{fill:var(--f-archivo)} #arrow-dinero path{fill:var(--f-dinero)}
+    #arrow-instr path{fill:var(--f-instr)} #arrow-accion path{fill:var(--f-accion)}
+    #arrow-control path{fill:var(--f-control)}
+    .flow:hover .edge, .flow:focus-visible .edge{stroke-width:4.4}
+    .flow:focus-visible{outline:none}
+    .flow.active .edge{stroke-width:4.6}
+    .lbl-bg{fill:var(--surface); stroke:var(--line-soft); stroke-width:1}
+  
+    .scene.filtered .flow.dim{opacity:.1}
+    ol.steps.filtered li.step.dim{opacity:.32}
+  
+    /* bubble */
+    .bubble{position:absolute; z-index:6; width:min(330px,calc(100% - 24px));
+      background:var(--surface); border:1px solid var(--line); border-radius:12px;
+      box-shadow:var(--pop); padding:.8rem .9rem .85rem; font-size:.86rem}
+    .bubble .btitle{font-weight:600; font-size:.96rem; padding-right:1.5rem; text-wrap:balance}
+    .bubble .bclose{position:absolute; top:.45rem; right:.5rem; cursor:pointer; border:0;
+      background:transparent; color:var(--muted); font-size:1.2rem; line-height:1; padding:.1rem .25rem}
+    .bubble .bclose:hover{color:var(--fg)}
+    .bubble .btag{display:inline-block; font-size:.66rem; letter-spacing:.05em; text-transform:uppercase;
+      font-weight:600; padding:.1rem .45rem; border-radius:5px; margin:.4rem 0 .25rem}
+    .bubble .bdesc{color:var(--fg)}
+    .bubble .bsrc{color:var(--muted); font-style:italic; font-size:.76rem; margin-top:.45rem}
+    .bmeta,.smeta{display:grid; gap:.32rem; margin-top:.5rem}
+    .mrow{display:grid; grid-template-columns:auto 1fr; gap:.4rem; font-size:.8rem; align-items:start}
+    .mk{font-weight:600; color:var(--muted); white-space:nowrap}
+    .mv{color:var(--fg); min-width:0}
+    li.step .smeta{margin-top:.4rem}
+    li.step .smeta .mv{color:var(--muted)}
+    .bubble::after{content:""; position:absolute; left:var(--px,24px); width:12px; height:12px;
+      background:var(--surface); border:1px solid var(--line); transform:rotate(45deg)}
+    .bubble.above::after{bottom:-7px; border-top:0; border-left:0}
+    .bubble.below::after{top:-7px; border-bottom:0; border-right:0}
+  
+    h2.section{font-size:.95rem; letter-spacing:.02em; margin:1.8rem 0 .7rem}
+    ol.steps{list-style:none; margin:0; padding:0; display:grid; gap:.55rem}
+    li.step{display:grid; grid-template-columns:auto 1fr; gap:.7rem; align-items:start;
+      background:var(--surface); border:1px solid var(--line); border-left-width:4px;
+      border-radius:10px; padding:.7rem .85rem; cursor:pointer; transition:box-shadow .15s, opacity .15s}
+    li.step .n{font-weight:700; font-size:.82rem; width:26px; height:26px; border-radius:7px;
+      display:grid; place-items:center; color:#fff; flex:none; font-family:"IBM Plex Mono",monospace}
+    li.step .body{min-width:0}
+    li.step .hd{display:flex; flex-wrap:wrap; gap:.4rem .6rem; align-items:baseline; margin-bottom:.15rem}
+    li.step .route{font-weight:600; font-size:.9rem}
+    li.step .tag{font-size:.68rem; letter-spacing:.05em; text-transform:uppercase; padding:.08rem .4rem; border-radius:5px; font-weight:600}
+    li.step .desc{font-size:.86rem; color:var(--muted)}
+    li.step .src{font-size:.74rem; color:var(--muted); font-style:italic; margin-top:.2rem}
+    li.step.archivo{border-left-color:var(--f-archivo)} li.step.archivo .n{background:var(--f-archivo)} li.step.archivo .tag{color:var(--f-archivo); background:color-mix(in srgb,var(--f-archivo) 14%,transparent)}
+    li.step.dinero{border-left-color:var(--f-dinero)}   li.step.dinero .n{background:var(--f-dinero)}   li.step.dinero .tag{color:var(--f-dinero); background:color-mix(in srgb,var(--f-dinero) 14%,transparent)}
+    li.step.instr{border-left-color:var(--f-instr)}     li.step.instr .n{background:var(--f-instr)}     li.step.instr .tag{color:var(--f-instr); background:color-mix(in srgb,var(--f-instr) 14%,transparent)}
+    li.step.accion{border-left-color:var(--f-accion)}   li.step.accion .n{background:var(--f-accion)}   li.step.accion .tag{color:var(--f-accion); background:color-mix(in srgb,var(--f-accion) 14%,transparent)}
+    li.step.control{border-left-color:var(--f-control)} li.step.control .n{background:var(--f-control)} li.step.control .tag{color:var(--f-control); background:color-mix(in srgb,var(--f-control) 14%,transparent)}
+    li.step.active{box-shadow:0 0 0 2px var(--fg) inset, var(--shadow)}
+  
+    .pay{background:var(--surface); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow); padding:1rem 1.1rem; margin-top:1.4rem}
+    .pay h3{margin:0 0 .2rem; font-size:1.02rem; font-weight:600; text-wrap:balance}
+    .pay p.lead{margin:0 0 .85rem; color:var(--muted); font-size:.86rem}
+    .pay .cols{display:grid; grid-template-columns:1fr 1fr; gap:1rem 1.6rem}
+    .pay .col{min-width:0}
+    .pay .col h4{margin:0 0 .45rem; font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--a-anses)}
+    .pay .col.t h4{color:var(--a-terceros)}
+    .pay ul{margin:0; padding-left:1.1rem; display:grid; gap:.24rem}
+    .pay li{font-size:.86rem}
+    .pay .note{margin-top:.85rem; font-size:.82rem; color:var(--muted); border-top:1px solid var(--line-soft); padding-top:.6rem}
+    @media (max-width:560px){ .pay .cols{grid-template-columns:1fr; gap:.9rem} }
+    footer{margin-top:1.8rem; color:var(--muted); font-size:.78rem; border-top:1px solid var(--line-soft); padding-top:.9rem}
+    @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  </style>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;700&display=swap">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <p class="eyebrow">Banco Bica · Agente pagador ANSES</p>
+      <h1>Ecosistema de Pago ANSES</h1>
+      <p class="sub">Cómo circula una liquidación de jubilaciones y pensiones entre ANSES, el BCRA, el banco y el beneficiario. Cada flecha indica quién actúa, en qué dirección y qué tipo de flujo es.</p>
+    </header>
+  
+    <div class="controls">
+      <div class="legend">
+        <h2>Filtrar por tipo de flujo</h2>
+        <div class="row" id="filters"></div>
+      </div>
+      <div class="legend">
+        <h2>Actores</h2>
+        <div class="row" id="actorsKey"></div>
+      </div>
+    </div>
+    <p class="hint">Tocá cualquier <strong>flecha</strong> o <strong>recuadro</strong> para ver su explicación, el momento y la fuente. Los números <strong>1–9</strong> siguen el orden del ciclo normal de pago; los que empiezan con <strong>E</strong> son pasos <strong>eventuales</strong> (solo en ciertos casos).</p>
+  
+    <div class="stage">
+      <div class="diagram-wrap" id="dwrap">
+        <svg class="scene" id="scene" viewBox="0 0 1240 660" role="img" aria-label="Diagrama del ecosistema de pago de ANSES. ANSES liquida los beneficios y da las órdenes; el BCRA provee los fondos y recibe la rendición; el banco acredita a los beneficiarios, les informa las CBU judiciales y rinde al BCRA.">
+          <defs>
+            <marker id="arrow-archivo" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"/></marker>
+            <marker id="arrow-dinero" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"/></marker>
+            <marker id="arrow-instr" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"/></marker>
+            <marker id="arrow-accion" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"/></marker>
+            <marker id="arrow-control" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"/></marker>
+          </defs>
+          <g id="edges"></g>
+          <g id="nodes"></g>
+          <g id="labels"></g>
+        </svg>
+      </div>
+      <div class="bubble" id="bubble" hidden role="dialog" aria-label="Explicación"></div>
+    </div>
+  
+    <section class="pay">
+      <h3>¿Qué le hace pagar ANSES al banco?</h3>
+      <p class="lead">Todo entra como liquidación de ANSES, un producto por vez, con el mismo Diseño Único de Registro. El banco acredita en cuenta o paga por ventanilla. (Anexo I, punto 1.2)</p>
+      <div class="cols">
+        <div class="col">
+          <h4>Prestaciones propias de ANSES</h4>
+          <ul>
+            <li>Jubilaciones y pensiones</li>
+            <li>Pensiones no contributivas (PNC)</li>
+            <li>Primeros pagos de jubilaciones y pensiones</li>
+            <li>Retroactivos de sentencias judiciales</li>
+            <li>Asignaciones Familiares</li>
+            <li>Pago Único de Asignaciones Familiares</li>
+            <li>Seguro por Desempleo (Planes 1, 2 y 3)</li>
+            <li>Asignación Universal por Hijo y por embarazo</li>
+            <li>Subsidio de Contención Familiar</li>
+          </ul>
+        </div>
+        <div class="col t">
+          <h4>Por cuenta y orden de terceros</h4>
+          <ul>
+            <li>Programas del MTEySS (Ministerio de Trabajo, Empleo y Seguridad Social)</li>
+            <li>Primeros Años (PDIPA)</li>
+            <li>Progresar</li>
+            <li>Hogar con Garrafas</li>
+            <li>RENNyA (reparación económica para niñas, niños y adolescentes)</li>
+            <li>Ingreso Social con Trabajo (PRIST)</li>
+            <li>Alimentar</li>
+          </ul>
+        </div>
+      </div>
+      <p class="note">ANSES puede sumar o dar de baja productos. Los retroactivos de sentencia y las cuentas judiciales (embargos, tutelas, curatelas) se pagan con reglas especiales de ruteo y autorización; el resto se acredita según el calendario de pagos.</p>
+    </section>
+  
+    <h2 class="section">Los flujos, paso a paso</h2>
+    <ol class="steps" id="steps"></ol>
+  
+    <footer>
+      Elaborado a partir del Anexo I – Procedimiento de Pago (ANSES), la Comunicación BCRA “A” 6386 y la Res. ANSES 132/2023. ANSES es el único interlocutor del banco por los ingresos; “Legales” es una validación interna del banco. Los diseños de registro byte a byte están en el Anexo II (Diseños de Registros), aún pendiente.
+    </footer>
+  </div>
+  
+  <script>
+  (function(){
+    var SVGNS="http://www.w3.org/2000/svg";
+    function el(tag,attrs){var e=document.createElementNS(SVGNS,tag);if(attrs)for(var k in attrs)e.setAttribute(k,attrs[k]);return e;}
+  
+    var TYPE_LABEL={archivo:"Archivo",dinero:"Dinero",instr:"Instrucción",accion:"Acción",control:"Control"};
+    var TYPES=[["archivo","Archivo"],["dinero","Dinero"],["instr","Instrucción"],["accion","Acción beneficiario"],["control","Control / validación"]];
+  
+    var NODES={
+      anses:{x:60,y:215,w:220,h:150,title:"ANSES",sub:"Liquida y pone al pago",accent:"anses",
+        desc:"Liquida y pone al pago los beneficios por producto, y es el único interlocutor del banco por los ingresos: envía las liquidaciones, instruye retenciones por mail y recibe del banco la CBU (Clave Bancaria Única) de las cuentas judiciales. Debajo del diagrama está el detalle de qué le hace pagar al banco."},
+      banco:{x:540,y:320,w:260,h:130,title:"Banco Bica",sub:"Agente pagador (LA ENTIDAD)",accent:"banco",hub:true,
+        desc:"Agente pagador (LA ENTIDAD). Da de alta clientes y abre cajas previsionales, acredita o paga por ventanilla, aplica retenciones, emite la OPE (Orden de Pago Electrónica), informa a ANSES las CBU (Clave Bancaria Única) judiciales (validadas por Legales) y rinde ante el BCRA."},
+      bcra:{x:1010,y:155,w:185,h:100,title:"BCRA",sub:"Fondos · rendición",accent:"bcra",
+        desc:"Donde está el dinero y ante quién se rinde. Abre dos cuentas corrientes especiales (meses pares / impares) que ANSES fondea, y recibe y procesa la rendición: debita impagos y acredita comisiones en la cuenta del banco."},
+      beneficiario:{x:1010,y:470,w:185,h:100,title:"Beneficiario",sub:"Titular / Apoderado",accent:"benef",
+        desc:"Titular o apoderado. Recibe la acreditación en su cuenta sueldo de la seguridad social / caja previsional, o cobra por ventanilla con OPE, y dispone de sus fondos: débito, extracciones, compras, transferencias y home banking."}
+    };
+  
+    var FLOWS=[
+      {id:"1",type:"archivo",dir:"→",pts:[[280,255],[540,355]],lpos:[410,300],short:"Liquidaciones + novedades",
+        route:"ANSES → Banco",desc:"Liquidación de pago por producto + novedades (cambios de agente pagador, suspensiones, bajas) + complementarias. Incluye el producto «Retroactivos de Sentencias Judiciales», con ruteo especial.",
+        when:"Disponible 5 días hábiles antes de la fecha de pago. La fecha de inicio de pago va en cada registro; el período de vigencia, en la cabecera. Es el tiempo de antelación con que el banco tiene la info antes de acreditar.",
+        fmt:"Archivo de texto plano (ASCII) de longitud fija, por SITACI (Sistema Integrado de Transferencia, Almacenamiento y Control de la Información, el canal de ANSES) — Diseño de Registro Único de Liquidación (Anexo II).",src:"Anexo I, pág. 1, 9 y 13"},
+      {id:"2",type:"dinero",dir:"→",pts:[[170,215],[170,95],[1102,95],[1102,155]],npos:[170,180],lpos:[636,82],short:"deposita fondos · ctas pares/impares",
+        route:"ANSES → BCRA",desc:"ANSES deposita los fondos para que el banco pueda pagar.",
+        when:"Hasta 24 h hábiles antes del inicio del período de pago.",
+        fmt:"Acreditación en las dos cuentas corrientes especiales del banco en el BCRA («meses pares» / «meses impares»).",src:"BCRA A 6386, secc. 3"},
+      {id:"3",type:"dinero",dir:"→",pts:[[1010,215],[800,355]],lpos:[905,262],short:"fondos a disposición",
+        route:"BCRA → Banco",desc:"El BCRA pone esos fondos a disposición del banco para que, como agente pagador, los acredite a los beneficiarios.",
+        when:"Desde el inicio del período de pago.",fmt:"Disponibilidad en las cuentas especiales del banco en el BCRA."},
+      {id:"4",type:"control",dir:"self",pts:[[556,320],[604,320]],lpos:[580,274],short:"Apertura",
+        route:"Banco · Apertura de cuentas",desc:"Da de alta al cliente y abre la caja de ahorro previsional asociada, según las novedades que vienen en la liquidación de ANSES.",
+        when:"Al procesar la liquidación, cuando hay altas o reactivaciones de beneficios."},
+      {id:"5",type:"control",dir:"self",pts:[[626,320],[662,320]],lpos:[644,274],short:"OPE",
+        route:"Banco · Emisión de OPE y tarjetas",desc:"Emite la OPE (Orden de Pago Electrónica) para los productos que se cobran por ventanilla, y las tarjetas de débito del titular y del apoderado.",
+        when:"Antes de poner el beneficio al cobro."},
+      {id:"6",type:"dinero",dir:"→",pts:[[800,440],[1010,510]],lpos:[905,488],short:"acreditación / OPE",
+        route:"Banco → Beneficiario",desc:"Acredita en la cuenta sueldo de la seguridad social / caja previsional, o paga por ventanilla con OPE (Orden de Pago Electrónica); entrega el extracto o detalle de la liquidación.",
+        when:"En la fecha de pago que indica el calendario, por beneficio.",fmt:"Acreditación en cuenta, o pago por ventanilla con OPE."},
+      {id:"7",type:"accion",dir:"self",bulge:24,pts:[[1055,570],[1150,570]],lpos:[1102,602],short:"usa sus fondos",
+        route:"Beneficiario",desc:"El beneficiario dispone de su dinero: extracciones, pago con débito, compras, transferencias y operaciones por home banking."},
+      {id:"8",type:"archivo",dir:"→",pts:[[800,380],[1070,255]],lpos:[930,300],short:"Rendición + DDJJ",
+        route:"Banco → BCRA",desc:"Rendición de cuentas de todo el período. Incluye las rendiciones fuera de término (FT): impagos FT (rectificar como impago algo rendido como pagado) y pagos FT (rectificar como pagado un impago).",
+        when:"Ordinaria: al cierre del período de vigencia de la liquidación (tardía → multa de 2 jubilaciones mínimas por día hábil). Impagos FT: una sola presentación por mes, entre los días 10 y 20 (sin multa dentro de 90 días; 180 si el beneficiario reside en el exterior). Pagos FT: plazo de 90 días corridos, con gasto del 2% de una jubilación mínima por beneficio.",
+        fmt:"Dos archivos de texto plano (ASCII) «TBBBMMAA.mENTID.txt» (pagadas «P» / impagas «I») + DDJJ (declaración jurada) en original y duplicado; se presenta en la Gerencia de Cuentas Corrientes del BCRA (10 a 15 h). Los casos fuera de término van por SITACI (el canal de ANSES) con nota digitalizada firmada.",src:"BCRA A 6386, secc. 2; Anexo I, pág. 13–15"},
+      {id:"9",type:"archivo",dir:"→",pts:[[1150,255],[800,420]],lpos:[985,342],short:"resultado · débito",
+        route:"BCRA → Banco",desc:"El BCRA devuelve el resultado (aceptación / inconsistencias), debita de la cuenta del banco los importes impagos y le acredita las comisiones del servicio.",
+        when:"El BCRA procesa el cierre de las rendiciones a la fecha límite.",fmt:"Resultado de la presentación; débito de impagos y acreditación de comisiones en la cuenta del banco en el BCRA.",src:"BCRA A 6386, secc. 2.8"},
+      {id:"E1",type:"instr",dir:"⇄",pts:[[280,310],[540,405]],lpos:[410,362],short:"Retención / Rehab (email)",
+        route:"ANSES ⇄ Banco",desc:"Orden de Retención (no pago) u Orden de Rehabilitación que el banco debe aplicar antes de liberar el pago. Es eventual: solo para los beneficios que ANSES indique.",
+        when:"Mínimo 48 h antes del inicio de pago del beneficio. El banco responde el mail como constancia de recibo y, dentro de las 24 h, informa el resultado de la gestión.",
+        fmt:"Instrucción por correo electrónico, con adjunto/evidencia — no es archivo de longitud fija.",src:"Anexo I, pág. 13"},
+      {id:"E2",type:"control",dir:"self",pts:[[678,320],[734,320]],lpos:[706,274],short:"Retenciones",
+        route:"Banco · Retenciones / rehabilitaciones",desc:"Aplica sobre el beneficio la retención (no pago) o la rehabilitación antes de liberar el pago. Se dispara por la instrucción de ANSES (ver E1).",
+        when:"Solo cuando ANSES instruye una retención o una rehabilitación."},
+      {id:"E3",type:"control",dir:"self",pts:[[758,320],[798,320]],lpos:[778,274],short:"Legales",
+        route:"Banco · Validación de Legales",desc:"Valida las cuentas judiciales, las autorizaciones (apoderado, tutor, curador) y el consentimiento del titular para liberar los retroactivos de sentencia.",
+        when:"Solo en casos judiciales o con apoderado / representante."},
+      {id:"E4",type:"archivo",dir:"→",pts:[[540,430],[280,335]],lpos:[410,390],short:"informa CBU judiciales",
+        route:"Banco → ANSES",desc:"El banco informa a ANSES la CBU (Clave Bancaria Única) de las cuentas judiciales correspondientes, para que ANSES acredite ahí los importes ordenados (embargos, tutelas, curatelas) por el Sistema Nacional de Pagos. Los retroactivos de sentencia no se acreditan en la cuenta sueldo hasta el consentimiento del titular.",
+        when:"Mensual, en cumplimiento de las mandas judiciales.",fmt:"Informe de CBU (Clave Bancaria Única) de cuentas judiciales (acreditación por el Sistema Nacional de Pagos).",src:"Anexo I, pág. 10–11"},
+      {id:"E5",type:"control",dir:"→",pts:[[540,415],[240,365]],lpos:[385,420],short:"fallecimiento · reversa",
+        route:"Banco → ANSES",desc:"Control de vida: ante un fallecimiento, el banco cruza con los pagos pendientes/acreditados/rendidos, bloquea o revierte, y rinde como impago (recupero + comisiones + multa). También revierte a ANSES los créditos no formalizados (AUH, Asignación Universal por Hijo / primeros pagos).",
+        when:"Control periódico contra las novedades de ANSES; se actúa al detectar el deceso."}
+    ];
+  
+    // ---- nodes ----
+    var gNodes=document.getElementById("nodes");
+    Object.keys(NODES).forEach(function(key){
+      var n=NODES[key];
+      var g=el("g",{class:"node"+(n.hub?" hub":""),tabindex:"0",role:"button","data-node":key,
+        "aria-label":n.title+". "+n.desc});
+      g.appendChild(el("rect",{class:"box",x:n.x,y:n.y,width:n.w,height:n.h,rx:12}));
+      g.appendChild(el("rect",{x:n.x,y:n.y,width:n.w,height:5,rx:2.5,fill:"var(--a-"+n.accent+")"}));
+      var t=el("text",{class:"title",x:n.x+n.w/2,y:n.y+n.h/2-2,"text-anchor":"middle","dominant-baseline":"middle"});
+      t.textContent=n.title; g.appendChild(t);
+      var s=el("text",{class:"sub",x:n.x+n.w/2,y:n.y+n.h/2+18,"text-anchor":"middle","dominant-baseline":"middle"});
+      s.textContent=n.sub; g.appendChild(s);
+      gNodes.appendChild(g);
+    });
+  
+    // ---- edges + labels ----
+    var gEdges=document.getElementById("edges"), gLabels=document.getElementById("labels");
+    function pathD(pts){ return pts.map(function(p,i){return (i?"L":"M")+p[0]+" "+p[1];}).join(" "); }
+  
+    FLOWS.forEach(function(f){
+      var g=el("g",{class:"flow "+f.type,tabindex:"0",role:"button","data-id":f.id,
+        "aria-label":f.route+". "+f.desc});
+      var d;
+      if(f.dir==="self"){
+        var a=f.pts[0], b=f.pts[1];
+        var bul=f.bulge||40;
+        if(Math.abs(a[1]-b[1])<2){ d="M"+a[0]+" "+a[1]+" C"+a[0]+" "+(a[1]-bul)+" "+b[0]+" "+(b[1]-bul)+" "+b[0]+" "+b[1]; }
+        else { d="M"+a[0]+" "+a[1]+" C"+(a[0]+46)+" "+a[1]+" "+(b[0]+46)+" "+b[1]+" "+b[0]+" "+b[1]; }
+      } else { d=pathD(f.pts); }
+      g.appendChild(el("path",{class:"hitbox",d:d}));
+      var edge=el("path",{class:"edge",d:d,"marker-end":"url(#arrow-"+f.type+")"});
+      if(f.dir==="⇄") edge.setAttribute("marker-start","url(#arrow-"+f.type+")");
+      g.appendChild(edge);
+      // number badge (pill, fits "1" or "E1")
+      var st=f.npos||f.pts[0], bw=((""+f.id).length>1?24:18);
+      g.appendChild(el("rect",{class:"num-bg",x:st[0]-bw/2,y:st[1]-9,width:bw,height:18,rx:9}));
+      var nt=el("text",{class:"num",x:st[0],y:st[1]+0.5,"text-anchor":"middle","dominant-baseline":"central"});
+      nt.textContent=f.id; g.appendChild(nt);
+      gLabels.appendChild(g); // flows render above nodes
+      // label with measured bg
+      var lg=el("g");
+      var tx=el("text",{class:"lbl-tx",x:f.lpos[0],y:f.lpos[1],"text-anchor":"middle","dominant-baseline":"middle"});
+      tx.textContent=f.short; g.appendChild(lg); lg.appendChild(tx);
+      var bb=tx.getBBox();
+      lg.insertBefore(el("rect",{class:"lbl-bg",x:bb.x-6,y:bb.y-3,width:bb.width+12,height:bb.height+6,rx:5}),tx);
+    });
+  
+    // ---- legend + filters ----
+    var filters=document.getElementById("filters");
+    function mkFilter(id,label,isAll){
+      var b=document.createElement("button");
+      b.className="filterbtn"; b.type="button"; b.setAttribute("aria-pressed",isAll?"true":"false"); b.dataset.filter=id;
+      if(!isAll){ var sw=document.createElement("span"); sw.className="swatch"; sw.style.background="var(--f-"+id+")"; b.appendChild(sw); }
+      var sp=document.createElement("span"); sp.textContent=label; b.appendChild(sp);
+      b.addEventListener("click",function(){ setFilter(id); });
+      return b;
+    }
+    filters.appendChild(mkFilter("todos","Todos",true));
+    TYPES.forEach(function(t){ filters.appendChild(mkFilter(t[0],t[1],false)); });
+  
+    var actorsKey=document.getElementById("actorsKey");
+    [["ANSES","anses"],["BCRA","bcra"],["Banco Bica","banco"],["Beneficiario","benef"]].forEach(function(a){
+      var s=document.createElement("span"); s.className="akey";
+      var d=document.createElement("span"); d.className="dot"; d.style.background="var(--a-"+a[1]+")"; s.appendChild(d);
+      var t=document.createElement("span"); t.textContent=a[0]; s.appendChild(t); actorsKey.appendChild(s);
+    });
+  
+    // ---- steps list ----
+    var ol=document.getElementById("steps");
+    FLOWS.forEach(function(f){
+      var li=document.createElement("li");
+      li.className="step "+f.type; li.dataset.id=f.id; li.dataset.type=f.type; li.tabIndex=0;
+      var n=document.createElement("div"); n.className="n"; n.textContent=f.id; li.appendChild(n);
+      var body=document.createElement("div"); body.className="body";
+      var hd=document.createElement("div"); hd.className="hd";
+      var r=document.createElement("span"); r.className="route"; r.textContent=f.route; hd.appendChild(r);
+      var tag=document.createElement("span"); tag.className="tag"; tag.textContent=TYPE_LABEL[f.type]+" "+f.dir; hd.appendChild(tag);
+      body.appendChild(hd);
+      var ds=document.createElement("div"); ds.className="desc"; ds.textContent=f.desc; body.appendChild(ds);
+      if(f.when||f.fmt){
+        var mw=document.createElement("div"); mw.className="smeta";
+        if(f.when) mw.appendChild(metaRow("Cuándo",f.when));
+        if(f.fmt)  mw.appendChild(metaRow("Formato",f.fmt));
+        body.appendChild(mw);
+      }
+      if(f.src){ var sc=document.createElement("div"); sc.className="src"; sc.textContent="Fuente: "+f.src; body.appendChild(sc); }
+      li.appendChild(body); ol.appendChild(li);
+      li.addEventListener("click",function(){ openForFlow(f.id,true); });
+      li.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); openForFlow(f.id,true);} });
+    });
+  
+    // ---- bubble engine ----
+    var scene=document.getElementById("scene"), stage=document.querySelector(".stage"),
+        dwrap=document.getElementById("dwrap"), bubble=document.getElementById("bubble");
+    var activeEl=null;
+    function flowEl(id){ return scene.querySelector('.flow[data-id="'+id+'"]'); }
+    function stepEl(id){ return ol.querySelector('.step[data-id="'+id+'"]'); }
+  
+    function clearActive(){
+      if(activeEl) activeEl.classList.remove("active");
+      ol.querySelectorAll(".step.active").forEach(function(s){s.classList.remove("active");});
+      activeEl=null;
+    }
+    function closeBubble(){ bubble.hidden=true; clearActive(); }
+  
+    function metaRow(k,v){
+      var row=document.createElement("div"); row.className="mrow";
+      var mk=document.createElement("span"); mk.className="mk"; mk.textContent=k+" —"; row.appendChild(mk);
+      var mv=document.createElement("span"); mv.className="mv"; mv.textContent=v; row.appendChild(mv);
+      return row;
+    }
+    function fillBubble(data){
+      bubble.innerHTML="";
+      var close=document.createElement("button"); close.className="bclose"; close.setAttribute("aria-label","Cerrar"); close.innerHTML="&times;";
+      close.addEventListener("click",function(e){ e.stopPropagation(); closeBubble(); });
+      bubble.appendChild(close);
+      var tt=document.createElement("div"); tt.className="btitle"; tt.textContent=data.title; bubble.appendChild(tt);
+      var tag=document.createElement("span"); tag.className="btag"; tag.textContent=data.tag;
+      tag.style.color="var("+data.colorVar+")"; tag.style.background="color-mix(in srgb,var("+data.colorVar+") 15%,transparent)";
+      bubble.appendChild(tag);
+      var ds=document.createElement("div"); ds.className="bdesc"; ds.textContent=data.desc; bubble.appendChild(ds);
+      if(data.when||data.fmt){
+        var mw=document.createElement("div"); mw.className="bmeta";
+        if(data.when) mw.appendChild(metaRow("Cuándo",data.when));
+        if(data.fmt)  mw.appendChild(metaRow("Formato",data.fmt));
+        bubble.appendChild(mw);
+      }
+      if(data.src){ var sc=document.createElement("div"); sc.className="bsrc"; sc.textContent="Fuente: "+data.src; bubble.appendChild(sc); }
+    }
+  
+    function placeBubble(targetEl){
+      var sR=stage.getBoundingClientRect(), r=targetEl.getBoundingClientRect();
+      bubble.hidden=false; bubble.classList.remove("above","below");
+      bubble.style.left="0px"; bubble.style.top="0px";
+      var bw=bubble.offsetWidth, bh=bubble.offsetHeight;
+      var cx=r.left+r.width/2 - sR.left;
+      var topInStage=r.top - sR.top, botInStage=r.bottom - sR.top;
+      var above = (topInStage - bh - 12) >= 0;
+      var top = above ? (topInStage - bh - 12) : (botInStage + 12);
+      var left = Math.max(8, Math.min(cx - bw/2, sR.width - bw - 8));
+      bubble.classList.add(above?"above":"below");
+      bubble.style.left=left+"px"; bubble.style.top=top+"px";
+      var px=Math.max(16, Math.min(cx - left, bw-16));
+      bubble.style.setProperty("--px",px+"px");
+    }
+  
+    function openForFlow(id,fromList){
+      var fe=flowEl(id), f=null;
+      FLOWS.forEach(function(x){ if(x.id===id) f=x; });
+      if(!fe||!f) return;
+      clearActive();
+      fillBubble({title:f.route, tag:TYPE_LABEL[f.type]+"  "+f.dir, colorVar:"--f-"+f.type, desc:f.desc, when:f.when, fmt:f.fmt, src:f.src});
+      if(fromList){ try{ fe.scrollIntoView({inline:"center",block:"nearest"}); }catch(e){} }
+      placeBubble(fe);
+      fe.classList.add("active"); activeEl=fe;
+      var se=stepEl(id); if(se) se.classList.add("active");
+    }
+    function openForNode(key,gEl){
+      var n=NODES[key]; if(!n) return;
+      clearActive();
+      fillBubble({title:n.title, tag:"Actor", colorVar:"--a-"+n.accent, desc:n.desc, src:null});
+      placeBubble(gEl);
+      gEl.classList.add("active"); activeEl=gEl;
+    }
+  
+    // wire svg interactions
+    FLOWS.forEach(function(f){
+      var fe=flowEl(f.id); if(!fe) return;
+      fe.addEventListener("click",function(e){ e.stopPropagation(); openForFlow(f.id,false); });
+      fe.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); e.stopPropagation(); openForFlow(f.id,false);} });
+    });
+    Object.keys(NODES).forEach(function(key){
+      var ne=scene.querySelector('.node[data-node="'+key+'"]'); if(!ne) return;
+      ne.addEventListener("click",function(e){ e.stopPropagation(); openForNode(key,ne); });
+      ne.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); e.stopPropagation(); openForNode(key,ne);} });
+    });
+  
+    bubble.addEventListener("click",function(e){ e.stopPropagation(); });
+    document.addEventListener("click",function(){ if(!bubble.hidden) closeBubble(); });
+    document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&!bubble.hidden) closeBubble(); });
+    dwrap.addEventListener("scroll",function(){ if(!bubble.hidden) closeBubble(); });
+    window.addEventListener("resize",function(){ if(!bubble.hidden) closeBubble(); });
+  
+    // ---- filters ----
+    function setFilter(type){
+      document.querySelectorAll(".filterbtn").forEach(function(b){ b.setAttribute("aria-pressed", b.dataset.filter===type?"true":"false"); });
+      var all=(type==="todos");
+      scene.classList.toggle("filtered",!all); ol.classList.toggle("filtered",!all);
+      if(!bubble.hidden) closeBubble();
+      FLOWS.forEach(function(f){
+        var match=all||f.type===type;
+        var fe=flowEl(f.id), se=stepEl(f.id);
+        if(fe) fe.classList.toggle("dim",!match);
+        if(se) se.classList.toggle("dim",!match);
+      });
+    }
+  })();
+  </script>
+</body>
+</html>
